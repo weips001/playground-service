@@ -3,14 +3,14 @@
 const Service = require('egg').Service;
 const xlsx = require('node-xlsx')
 const md5 = require('md5-node');
-class PayRecordService extends Service {
+class VipService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     const [list, total] = await Promise.all([
-      ctx.model.PayRecord.find(filter).skip(offset).limit(limit)
+      ctx.model.Vip.find(filter).skip(offset).limit(limit)
         .lean()
         .exec(),
-      ctx.model.PayRecord.countDocuments(filter)
+      ctx.model.Vip.countDocuments(filter)
         .lean()
         .exec(),
     ]);
@@ -22,7 +22,7 @@ class PayRecordService extends Service {
   }
   async get(id) {
     const ctx = this.ctx;
-    const doc = await ctx.model.PayRecord.findOne({
+    const doc = await ctx.model.Vip.findOne({
       id
     }).lean().exec();
     return {
@@ -41,7 +41,7 @@ class PayRecordService extends Service {
         msg: '卡号已存在',
       };
     }
-    const PayRecord = ctx.model.PayRecord({
+    const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
       cardId,
       cardType,
@@ -54,7 +54,7 @@ class PayRecordService extends Service {
       payTime,
       record
     });
-    await PayRecord.save();
+    await Vip.save();
     return {
       success: true,
       msg: '添加成功',
@@ -63,29 +63,50 @@ class PayRecordService extends Service {
   }
   async update(id, data = {}) {
     const ctx = this.ctx;
-    const PayRecord = await ctx.model.PayRecord.findOne({
+    const Vip = await ctx.model.Vip.findOne({
       id
     }).exec();
-    if (!PayRecord) {
+    if (!Vip) {
       return {
         code: 1,
-        msg: 'PayRecord不存在',
+        msg: 'Vip不存在',
       };
     }
     if (typeof data.name !== 'undefined') {
-      PayRecord.name = data.name;
+      Vip.name = data.name;
     }
     if (typeof data.phone !== 'undefined') {
-      PayRecord.phone = data.phone;
+      Vip.phone = data.phone;
     }
-    if (typeof data.biNumber !== 'undefined') {
-      PayRecord.biNumber = data.biNumber;
+    if (typeof data.nowMoney !== 'undefined') {
+      Vip.nowMoney = data.nowMoney;
+      Vip.money = Number(Vip.money)+Number(data.nowMoney);
+      await this.ctx.service.buyRecord.add({
+        cardId: Vip.cardId,
+        name: Vip.name,
+        phone: Vip.phone,
+        cardType: Vip.cardType,
+        buyMoney: data.nowMoney
+      })
     }
-    if (typeof data.record !== 'undefined') {
-      PayRecord.record = data.record;
+    if (typeof data.nowTotal !== 'undefined') {
+      Vip.totalRest = Number(Vip.totalRest)+Number(data.nowTotal);
+      Vip.total = Number(Vip.total)+Number(data.nowTotal);
+      // 添加一条充值记录
     }
-    PayRecord.updateTime = new Date();
-    await PayRecord.save();
+    if (typeof data.deleteNum !== 'undefined') {
+      Vip.totalRest = Number(Vip.totalRest)-Number(data.deleteNum);
+      // 添加一跳扣次记录
+      await this.ctx.service.shoppingRecord.add({
+        cardId: Vip.cardId,
+        name: Vip.name,
+        phone: Vip.phone,
+        cardType: Vip.cardType,
+        shoppingNum: data.deleteNum
+      })
+    }
+    Vip.updateTime = new Date();
+    await Vip.save();
     return {
       success: true,
       msg: '修改成功',
@@ -94,16 +115,16 @@ class PayRecordService extends Service {
   }
   async remove(id) {
     const ctx = this.ctx;
-    const PayRecord = await ctx.model.PayRecord.findOne({
+    const Vip = await ctx.model.Vip.findOne({
       id
     }).exec();
-    if (!PayRecord) {
+    if (!Vip) {
       return {
         code: 1,
         msg: '该驾校不存在',
       };
     }
-    await PayRecord.remove();
+    await Vip.remove();
     return {
       success: true,
       msg: '删除成功',
@@ -112,7 +133,7 @@ class PayRecordService extends Service {
   }
   async removeAll(id) {
     const ctx = this.ctx;
-    const res = await ctx.model.PayRecord.remove().exec();
+    const res = await ctx.model.Vip.remove().exec();
     if(res.ok === 1) {
       return {
         success: true,
@@ -131,8 +152,8 @@ class PayRecordService extends Service {
     const filter = {
       cardId,
     };
-    const PayRecord = await ctx.model.PayRecord.findOne(filter).lean().exec();
-    return !!PayRecord;
+    const Vip = await ctx.model.Vip.findOne(filter).lean().exec();
+    return !!Vip;
   }
   async phoneExist(phone) {
     const ctx = this.ctx;
@@ -244,4 +265,4 @@ class PayRecordService extends Service {
     return res
   }
 }
-module.exports = PayRecordService;
+module.exports = VipService;

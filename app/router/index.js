@@ -18,5 +18,5 @@ module.exports = app => {
   require('./school')(app)
   require('./student')(app)
   require('./gameBi')(app)
-  require('./payRecord')(app)
+  require('./vip')(app)
 };

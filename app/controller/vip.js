@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 
-class PayRecordController extends Controller {
+class VipController extends Controller {
   async list() {
     const ctx = this.ctx;
     const query = ctx.query;
@@ -21,35 +21,35 @@ class PayRecordController extends Controller {
     }
     const limit = parseInt(query.pageSize || 10);
     const offset = (parseInt(query.current || 1) - 1) * limit;
-    this.ctx.body = await this.ctx.service.payRecord.list(filter, limit, offset);
+    this.ctx.body = await this.ctx.service.vip.list(filter, limit, offset);
   }
   async get() {
     const ctx = this.ctx;
     const id = ctx.params.id;
-    ctx.body = await ctx.service.payRecord.get(id);
+    ctx.body = await ctx.service.vip.get(id);
   }
   async add() {
     const ctx = this.ctx;
-    ctx.body = await ctx.service.payRecord.add(ctx.request.body);
+    ctx.body = await ctx.service.vip.add(ctx.request.body);
   }
   async remove() {
     const ctx = this.ctx;
     const id = ctx.params.id;
-    ctx.body = await ctx.service.payRecord.remove(id);
+    ctx.body = await ctx.service.vip.remove(id);
   }
   async removeAll() {
     const ctx = this.ctx;
-    ctx.body = await ctx.service.payRecord.removeAll();
+    ctx.body = await ctx.service.vip.removeAll();
   }
   async update() {
     const ctx = this.ctx;
     const id = ctx.params.id;
-    ctx.body = await ctx.service.payRecord.update(id, ctx.request.body);
+    ctx.body = await ctx.service.vip.update(id, ctx.request.body);
   }
   async uploadFile() {
     const ctx = this.ctx;
-    ctx.body = await ctx.service.payRecord.uploadFile(ctx.request.files[0]);
+    ctx.body = await ctx.service.vip.uploadFile(ctx.request.files[0]);
   }
 }
 
-module.exports = PayRecordController;
+module.exports = VipController;

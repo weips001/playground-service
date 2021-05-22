@@ -2,20 +2,24 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
+import ExportBuyRecord = require('../../../app/model/buyRecord');
 import ExportGameBi = require('../../../app/model/gameBi');
-import ExportPayRecord = require('../../../app/model/payRecord');
 import ExportRole = require('../../../app/model/role');
 import ExportSchool = require('../../../app/model/school');
+import ExportShoppingRecord = require('../../../app/model/shoppingRecord');
 import ExportStudent = require('../../../app/model/student');
 import ExportUser = require('../../../app/model/user');
+import ExportVip = require('../../../app/model/vip');
 
 declare module 'egg' {
   interface IModel {
+    BuyRecord: ReturnType<typeof ExportBuyRecord>;
     GameBi: ReturnType<typeof ExportGameBi>;
-    PayRecord: ReturnType<typeof ExportPayRecord>;
     Role: ReturnType<typeof ExportRole>;
     School: ReturnType<typeof ExportSchool>;
+    ShoppingRecord: ReturnType<typeof ExportShoppingRecord>;
     Student: ReturnType<typeof ExportStudent>;
     User: ReturnType<typeof ExportUser>;
+    Vip: ReturnType<typeof ExportVip>;
   }
 }
