@@ -78,6 +78,9 @@ class VipService extends Service {
     if (typeof data.phone !== 'undefined') {
       Vip.phone = data.phone;
     }
+    if (typeof data.overdate !== 'undefined') {
+      Vip.overdate = data.overdate;
+    }
     if (typeof data.nowMoney !== 'undefined') {
       Vip.nowMoney = data.nowMoney;
       Vip.money = Number(Vip.money)+Number(data.nowMoney);
@@ -96,6 +99,13 @@ class VipService extends Service {
     }
     if (typeof data.deleteNum !== 'undefined') {
       Vip.totalRest = Number(Vip.totalRest)-Number(data.deleteNum);
+      if(Vip.totalRest === 0) {
+        return {
+          success: false,
+          msg: '没有可扣的次数了',
+          code: 1
+        }
+      }
       // 添加一跳扣次记录
       await this.ctx.service.shoppingRecord.add({
         cardId: Vip.cardId,

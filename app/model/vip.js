@@ -35,6 +35,7 @@ module.exports = app => {
       type: Date,
       default: new Date()
     },
+    overdate: Date,
     createTime: {
       type: Date,
       default: new Date()
