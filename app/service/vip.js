@@ -184,47 +184,44 @@ class VipService extends Service {
     const User = await ctx.model.User.findOne(filter).lean().exec();
     return !!User;
   }
+  async saveItem() {
+
+  }
   async readFile(filePath) {
-    console.log(filePath)
     try {
       var sheets = xlsx.parse(filePath);
-      console.log(sheets.name)
       let successNum = 0
       let errorNum = 0
       let errInfo = []
-      sheets.forEach(async (sheet) => {
-        // 读取每行内容
-        const name = sheet['name']
-        for (let i = 0; i < sheet.data.length; i++) {
-          const row = sheet['data'][i]
-          console.log(row)
-          const params = {
-            cardId: row[0],
-            cardType: Number(row[1]) === 1 ? '0' : '1',
-            name: row[2],
-            sex: row[3] === '男' ? '0' : '1',
-            phone: row[4],
-            createTime: row[5],
-            birthday: row[7]
-          }
-          if (i > 0 && row[i]) {
-            const data = await this.add(params)
-            console.log(i, data)
-            // if (data.code === 0) {
-            //   console.log(successNum)
-            //   successNum++
-            // } else {
-            //   errorNum++
-            //   errInfo.push({
-            //     index: i,
-            //     msg: data.msg
-            //   })
-            //   console.log(data.msg)
-            // }
-            
+      const sheet = sheets[0]
+      const name = sheet['name']
+
+      for (let i = 0; i < sheet.data.length; i++) {
+        const row = sheet['data'][i]
+        const params = {
+          cardId: row[0],
+          cardType: Number(row[1]) === 1 ? '0' : '1',
+          name: row[2],
+          sex: row[3] === '男' ? '0' : '1',
+          phone: row[4],
+          createTime: row[5],
+          birthday: row[7]
+        }
+        if (i > 0 && row) {
+          const data = await this.add(params)
+          if (data.code === 0) {
+            // console.log(successNum)
+            successNum++
+          } else {
+            errorNum++
+            errInfo.push({
+              index: i,
+              msg: data.msg
+            })
+            // console.log(data.msg)
           }
         }
-      })
+      }
       if (errorNum > 0) {
         return {
           code: 1,
@@ -247,9 +244,7 @@ class VipService extends Service {
     }
   }
   async uploadFile(file) {
-    console.log('-----', file)
     const res = await this.readFile(file.filepath)
-    console.log('res', res)
     return res
   }
 }
