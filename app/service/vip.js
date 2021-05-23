@@ -33,7 +33,7 @@ class VipService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
     const app = this.app;
-    const { cardId, name, phone, cardType, money, total, payTotal, totalRest, payTime, record } = data
+    const { cardId, name, phone, sex, cardType, remark, birthday, money, total, payTotal, totalRest, payTime, record, createTime } = data
     const exist = await this.nameExist(cardId);
     if (exist) {
       return {
@@ -49,10 +49,14 @@ class VipService extends Service {
       phone,
       money,
       total,
+      remark,
+      birthday,
+      sex,
       totalRest,
       payTotal,
       payTime,
-      record
+      record,
+      createTime
     });
     await Vip.save();
     return {
@@ -75,6 +79,12 @@ class VipService extends Service {
     if (typeof data.name !== 'undefined') {
       Vip.name = data.name;
     }
+    if (typeof data.remark !== 'undefined') {
+      Vip.remark = data.remark;
+    }
+    if (typeof data.cardType !== 'undefined') {
+      Vip.cardType = data.cardType;
+    }
     if (typeof data.phone !== 'undefined') {
       Vip.phone = data.phone;
     }
@@ -83,7 +93,7 @@ class VipService extends Service {
     }
     if (typeof data.nowMoney !== 'undefined') {
       Vip.nowMoney = data.nowMoney;
-      Vip.money = Number(Vip.money)+Number(data.nowMoney);
+      Vip.money = Number(Vip.money) + Number(data.nowMoney);
       await this.ctx.service.buyRecord.add({
         cardId: Vip.cardId,
         name: Vip.name,
@@ -93,13 +103,13 @@ class VipService extends Service {
       })
     }
     if (typeof data.nowTotal !== 'undefined') {
-      Vip.totalRest = Number(Vip.totalRest)+Number(data.nowTotal);
-      Vip.total = Number(Vip.total)+Number(data.nowTotal);
+      Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
+      Vip.total = Number(Vip.total) + Number(data.nowTotal);
       // 添加一条充值记录
     }
     if (typeof data.deleteNum !== 'undefined') {
-      Vip.totalRest = Number(Vip.totalRest)-Number(data.deleteNum);
-      if(Vip.totalRest === 0) {
+      Vip.totalRest = Number(Vip.totalRest) - Number(data.deleteNum);
+      if (Vip.totalRest === 0) {
         return {
           success: false,
           msg: '没有可扣的次数了',
@@ -144,7 +154,7 @@ class VipService extends Service {
   async removeAll(id) {
     const ctx = this.ctx;
     const res = await ctx.model.Vip.remove().exec();
-    if(res.ok === 1) {
+    if (res.ok === 1) {
       return {
         success: true,
         msg: '删除成功',
@@ -179,74 +189,42 @@ class VipService extends Service {
       var sheets = xlsx.parse(filePath);
       console.log(sheets.name)
       let record = []
-      sheets.forEach(function (sheet) {
+      let successNum = 0
+      let errorNum = 0
+      let errInfo = []
+      sheets.forEach(async (sheet) => {
         // 读取每行内容
         const name = sheet['name']
         for (let i = 0; i < sheet.data.length; i++) {
           const row = sheet['data'][i]
-          const time = row[1].split('.')[0]
+          console.log(row)
           const params = {
-            time,
-            cardId: row[2],
-            money: row[8],
-            total: row[9],
-            reset: row[10],
-            usedNum: row[11],
-            cardType: row[9] > 0 ? '0' : '-1'
+            cardId: row[0],
+            cardType: Number(row[1]) === 1 ? '0' : '1',
+            name: row[2],
+            sex: row[3] === '男' ? '0' : '1',
+            phone: row[4],
+            createTime: row[5],
+            birthday: row[7]
           }
-          if (i > 0) {
-            const current = record.find(item => item.cardId === row[2])
-            if (current) {
-              current.record.push(params)
-            } else {
-              record.push({
-                cardId: row[2],
-                name: row[4],
-                record: [params]
-              })
-            }
+          if (i > 0 && row[i]) {
+            const data = await this.add(params)
+            console.log(i, data)
+            // if (data.code === 0) {
+            //   console.log(successNum)
+            //   successNum++
+            // } else {
+            //   errorNum++
+            //   errInfo.push({
+            //     index: i,
+            //     msg: data.msg
+            //   })
+            //   console.log(data.msg)
+            // }
+            
           }
         }
       })
-      let newList = record.map((item, index) => {
-        const sum = item.record.reduce((prev, next) => {
-          if (next.reset < 0) {
-            return prev
-          }
-          return prev + next.reset
-        }, 0)
-        const total = item.record.reduce((prev, next) => {
-          if (next.reset < 0) {
-            return prev
-          }
-          return prev + next.total
-        }, 0)
-        const cardType = item.record.some(item => item.cardType === '-1')
-        return {
-          ...item,
-          total,
-          payTotal: item.record.length,
-          totalRest: sum,
-          cardType: cardType ? '-1' : '0'
-        }
-      })
-      let successNum = 0
-      let errorNum = 0
-      let errInfo = []
-      for (let i = 0; i < newList.length; i++) {
-        const data = await this.add(newList[i])
-        if (data.code === 0) {
-          console.log(successNum)
-          successNum++
-        } else {
-          errorNum++
-          errInfo.push({
-            index: i,
-            msg: data.msg
-          })
-          console.log(data.msg)
-        }
-      }
       if (errorNum > 0) {
         return {
           code: 1,

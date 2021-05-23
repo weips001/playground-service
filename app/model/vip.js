@@ -29,7 +29,7 @@ module.exports = app => {
     },  // 剩余次数
     payTotal: Number,  // 支付次数
     payTime: Date,  // 支付时间
-    reMark: String, // 备注
+    remark: String, // 备注
     sex: String,
     birthday: {
       type: Date,

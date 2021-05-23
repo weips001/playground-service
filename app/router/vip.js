@@ -8,5 +8,5 @@ module.exports = app => {
   router.put('/api/vip/:id', controller.vip.update);
   router.delete('/api/vip/removeAll', controller.vip.removeAll);
   router.delete('/api/vip/:id', controller.vip.remove);
-  router.post('/api/vipImport', controller.vip.uploadFile);
+  router.post('/api/vipUpload', controller.vip.uploadFile);
 };
