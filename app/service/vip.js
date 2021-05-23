@@ -131,6 +131,7 @@ class VipService extends Service {
         cardType: Vip.cardType,
         buyMoney: data.nowMoney
       })
+      Vip.rechargeNum = Vip.rechargeNum + 1
     }
     if (typeof data.nowTotal !== 'undefined') {
       Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
