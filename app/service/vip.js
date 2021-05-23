@@ -42,7 +42,7 @@ class VipService extends Service {
       };
     }
     let isYearCard = false
-    if(data.total === -1) {
+    if(data.restTotal === -1) {
       isYearCard = true
     }
     const Vip = ctx.model.Vip({
@@ -52,6 +52,7 @@ class VipService extends Service {
       name,
       phone,
       money,
+      restTotal:total,
       total,
       remark,
       birthday,
@@ -99,7 +100,7 @@ class VipService extends Service {
       Vip.phone = data.phone;
     }
     if (typeof data.deleteNum !== 'undefined') {
-      let num =  Number(Vip.total) - Number(data.deleteNum);
+      let num =  Number(Vip.restTotal) - Number(data.deleteNum);
       if (num < 0 && !Vip.isYearCard) {
         return {
           success: false,
@@ -107,9 +108,9 @@ class VipService extends Service {
           code: 1
         }
       }
-      Vip.total = Number(Vip.total) - Number(data.deleteNum);
+      Vip.restTotal = Number(Vip.restTotal) - Number(data.deleteNum);
       if(Vip.isYearCard) {
-        Vip.total = -1
+        Vip.restTotal = -1
       }
       // 添加一跳扣次记录
       await this.ctx.service.shoppingRecord.add({
@@ -123,7 +124,7 @@ class VipService extends Service {
     }
     Vip.updateTime = new Date();
     await Vip.save();
-    if(Vip.total === 0) {
+    if(Vip.restTotal === 0) {
       await Vip.remove();
     }
     return {
