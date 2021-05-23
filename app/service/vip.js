@@ -33,7 +33,7 @@ class VipService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
     const app = this.app;
-    const { cardId, name, phone, sex, cardType, remark, birthday, money, nowMoney, total, payTotal, totalRest, payTime, createTime } = data
+    const { name, phone, cardId, cardType, money, sex, remark, birthday, nowMoney, nowTotal, payTotal, totalRest, payTime, createTime } = data
     const exist = await this.nameExist(cardId);
     if (exist) {
       return {
@@ -42,7 +42,9 @@ class VipService extends Service {
       };
     }
     let isYearCard = false
-    // if()
+    if(data.nowTotal === -1) {
+      isYearCard = true
+    }
     const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
       cardId,
@@ -50,7 +52,7 @@ class VipService extends Service {
       name,
       phone,
       money,
-      total,
+      nowTotal,
       remark,
       birthday,
       sex,
@@ -62,6 +64,14 @@ class VipService extends Service {
       createTime
     });
     await Vip.save();
+    await this.ctx.service.buyRecord.add({
+      id: ctx.helper.generateId(),
+      cardId: Vip.cardId,
+      name: Vip.name,
+      phone: Vip.phone,
+      cardType: Vip.cardType,
+      buyMoney: data.nowMoney
+    })
     return {
       success: true,
       msg: '添加成功',
@@ -79,25 +89,14 @@ class VipService extends Service {
         msg: 'Vip不存在',
       };
     }
-    let isYearCard = false
-    if(data.nowTotal === -1) {
-      isYearCard = true
-      Vip.isYearCard = isYearCard
-    }
     if (typeof data.name !== 'undefined') {
       Vip.name = data.name;
     }
     if (typeof data.remark !== 'undefined') {
       Vip.remark = data.remark;
     }
-    if (typeof data.cardType !== 'undefined') {
-      Vip.cardType = data.cardType;
-    }
     if (typeof data.phone !== 'undefined') {
       Vip.phone = data.phone;
-    }
-    if (typeof data.overdate !== 'undefined') {
-      Vip.overdate = data.overdate;
     }
     if (typeof data.deleteNum !== 'undefined') {
       let num =  Number(Vip.totalRest) - Number(data.deleteNum);
@@ -114,6 +113,7 @@ class VipService extends Service {
       }
       // 添加一跳扣次记录
       await this.ctx.service.shoppingRecord.add({
+        id: ctx.helper.generateId(),
         cardId: Vip.cardId,
         name: Vip.name,
         phone: Vip.phone,
@@ -121,23 +121,11 @@ class VipService extends Service {
         shoppingNum: data.deleteNum
       })
     }
-    if (typeof data.nowMoney !== 'undefined') {
-      Vip.nowMoney = data.nowMoney;
-      Vip.money = Number(Vip.money) + Number(data.nowMoney);
-      await this.ctx.service.buyRecord.add({
-        cardId: Vip.cardId,
-        name: Vip.name,
-        phone: Vip.phone,
-        cardType: Vip.cardType,
-        buyMoney: data.nowMoney
-      })
-      Vip.rechargeNum = Vip.rechargeNum + 1
-    }
-    if (typeof data.nowTotal !== 'undefined') {
-      Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
-      Vip.total = Number(Vip.total) + Number(data.nowTotal);
-      // 添加一条充值记录
-    }
+    // if (typeof data.nowTotal !== 'undefined') {
+    //   Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
+    //   Vip.total = Number(Vip.total) + Number(data.nowTotal);
+    //   // 添加一条充值记录
+    // }
     Vip.updateTime = new Date();
     await Vip.save();
     return {

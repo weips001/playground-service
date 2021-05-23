@@ -18,10 +18,6 @@ module.exports = app => {
       type: Boolean,
       default: false
     },
-    rechargeNum: {
-      type: Number,
-      default: 0
-    },
     nowMoney: {
       type: Number,
       default: 0
