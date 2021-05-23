@@ -18,21 +18,10 @@ module.exports = app => {
       type: Boolean,
       default: false
     },
-    nowMoney: {
-      type: Number,
-      default: 0
-    },  // 充值钱数
-    nowTotal: Number,  // 本次充值次数
     total: {
       type: Number,
       default: 0
     }, // 充值总次数
-    totalRest: {
-      type: Number,
-      default: 0
-    },  // 剩余次数
-    payTotal: Number,  // 支付次数
-    payTime: Date,  // 支付时间
     remark: String, // 备注
     sex: String,
     birthday: {

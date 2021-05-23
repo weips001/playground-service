@@ -33,7 +33,7 @@ class VipService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
     const app = this.app;
-    const { name, phone, cardId, cardType, money, sex, remark, birthday, nowMoney, nowTotal, payTotal, totalRest, payTime, createTime, overdate } = data
+    const { name, phone, cardId, cardType, money, sex, remark, birthday, total, createTime, overdate } = data
     const exist = await this.nameExist(cardId);
     if (exist) {
       return {
@@ -42,7 +42,7 @@ class VipService extends Service {
       };
     }
     let isYearCard = false
-    if(data.nowTotal === -1) {
+    if(data.total === -1) {
       isYearCard = true
     }
     const Vip = ctx.model.Vip({
@@ -52,14 +52,10 @@ class VipService extends Service {
       name,
       phone,
       money,
-      nowTotal,
+      total,
       remark,
       birthday,
       sex,
-      totalRest,
-      nowMoney,
-      payTotal,
-      payTime,
       isYearCard,
       createTime,
       overdate
@@ -100,7 +96,7 @@ class VipService extends Service {
       Vip.phone = data.phone;
     }
     if (typeof data.deleteNum !== 'undefined') {
-      let num =  Number(Vip.totalRest) - Number(data.deleteNum);
+      let num =  Number(Vip.total) - Number(data.deleteNum);
       if (num < 0 && !Vip.isYearCard) {
         return {
           success: false,
@@ -108,9 +104,9 @@ class VipService extends Service {
           code: 1
         }
       }
-      Vip.totalRest = Number(Vip.totalRest) - Number(data.deleteNum);
+      Vip.total = Number(Vip.total) - Number(data.deleteNum);
       if(Vip.isYearCard) {
-        Vip.totalRest = -1
+        Vip.total = -1
       }
       // 添加一跳扣次记录
       await this.ctx.service.shoppingRecord.add({
