@@ -33,7 +33,7 @@ class VipService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
     const app = this.app;
-    const { name, phone, cardId, cardType, money, sex, remark, birthday, nowMoney, nowTotal, payTotal, totalRest, payTime, createTime } = data
+    const { name, phone, cardId, cardType, money, sex, remark, birthday, nowMoney, nowTotal, payTotal, totalRest, payTime, createTime, overdate } = data
     const exist = await this.nameExist(cardId);
     if (exist) {
       return {
@@ -61,7 +61,8 @@ class VipService extends Service {
       payTotal,
       payTime,
       isYearCard,
-      createTime
+      createTime,
+      overdate
     });
     await Vip.save();
     await this.ctx.service.buyRecord.add({
@@ -121,11 +122,6 @@ class VipService extends Service {
         shoppingNum: data.deleteNum
       })
     }
-    // if (typeof data.nowTotal !== 'undefined') {
-    //   Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
-    //   Vip.total = Number(Vip.total) + Number(data.nowTotal);
-    //   // 添加一条充值记录
-    // }
     Vip.updateTime = new Date();
     await Vip.save();
     return {
