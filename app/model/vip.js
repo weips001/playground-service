@@ -11,7 +11,7 @@ module.exports = app => {
 		cardId: String, // 会员卡号
 		cardType: String, // 会员卡类型 0-次卡 -1 时间卡
     money: {
-      type: Number,
+      type: Number || String,
       default: 0
     },
     isYearCard: {
@@ -19,24 +19,24 @@ module.exports = app => {
       default: false
     },
     restTotal: {
-      type: Number,
+      type: Number || String,
       default: 0
     }, // 充值总次数
     usedTotal: {
-      type: Number,
+      type: Number || String,
       default: 0
     },
     total: {
-      type: Number,
+      type: Number || String,
       default: 0
     },
     remark: String, // 备注
     sex: String,
     birthday: {
-      type: Date,
+      type: Date || String,
       default: new Date()
     },
-    overdate: Date,
+    overdate: Date || String,
     createTime: {
       type: Date,
       default: new Date()
