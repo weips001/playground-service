@@ -282,18 +282,5 @@ class VipService extends Service {
       console.log('err', e)
     }
   }
-  async addUserAndPhone(data = {}){
-    const ctx = this.ctx;
-    const app = this.app;
-    const { phone, sex, birthday, cardId } = data
-    const UserAndPhone = ctx.model.UserAndPhone({
-      id: ctx.helper.generateId(),
-      phone,
-      sex,
-      birthday,
-      cardId
-    });
-    await UserAndPhone.save();
-  }
 }
 module.exports = VipService;
