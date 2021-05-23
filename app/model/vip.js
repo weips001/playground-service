@@ -18,10 +18,18 @@ module.exports = app => {
       type: Boolean,
       default: false
     },
-    total: {
+    restTotal: {
       type: Number,
       default: 0
     }, // 充值总次数
+    usedTotal: {
+      type: Number,
+      default: 0
+    },
+    total: {
+      type: Number,
+      default: 0
+    },
     remark: String, // 备注
     sex: String,
     birthday: {

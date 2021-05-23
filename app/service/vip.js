@@ -42,7 +42,7 @@ class VipService extends Service {
     //   };
     // }
     let isYearCard = false
-    if(data.total === -1) {
+    if(data.restTotal === -1) {
       isYearCard = true
     }
     const Vip = ctx.model.Vip({
@@ -52,6 +52,7 @@ class VipService extends Service {
       name,
       phone,
       money,
+      restTotal:total,
       total,
       remark,
       birthday,
@@ -89,6 +90,9 @@ class VipService extends Service {
     if (typeof data.name !== 'undefined') {
       Vip.name = data.name;
     }
+    if (typeof data.sex !== 'undefined') {
+      Vip.sex = data.sex;
+    }
     if (typeof data.remark !== 'undefined') {
       Vip.remark = data.remark;
     }
@@ -96,7 +100,7 @@ class VipService extends Service {
       Vip.phone = data.phone;
     }
     if (typeof data.deleteNum !== 'undefined') {
-      let num =  Number(Vip.total) - Number(data.deleteNum);
+      let num =  Number(Vip.restTotal) - Number(data.deleteNum);
       if (num < 0 && !Vip.isYearCard) {
         return {
           success: false,
@@ -104,9 +108,9 @@ class VipService extends Service {
           code: 1
         }
       }
-      Vip.total = Number(Vip.total) - Number(data.deleteNum);
+      Vip.restTotal = Number(Vip.restTotal) - Number(data.deleteNum);
       if(Vip.isYearCard) {
-        Vip.total = -1
+        Vip.restTotal = -1
       }
       // 添加一跳扣次记录
       await this.ctx.service.shoppingRecord.add({
@@ -120,6 +124,9 @@ class VipService extends Service {
     }
     Vip.updateTime = new Date();
     await Vip.save();
+    if(Vip.restTotal === 0) {
+      await Vip.remove();
+    }
     return {
       success: true,
       msg: '修改成功',
@@ -241,6 +248,55 @@ class VipService extends Service {
   async uploadFile(file) {
     const res = await this.readFile(file.filepath)
     return res
+  }
+  async vipUserUpload(file) {
+    const res = await this.readVipUserUpload(file.filepath)
+    return res
+  }
+  async readVipUserUpload(filePath) {
+    const ctx = this.ctx;
+    const app = this.app;
+    try {
+      var sheets = xlsx.parse(filePath);
+      const sheet = sheets[0]
+      const name = sheet['name']
+
+      for (let i = 0; i < sheet.data.length; i++) {
+        const row = sheet['data'][i]
+        const params = {
+          cardId: row[0],
+          sex: row[3] === '男' ? '0' : '1',
+          phone: row[4],
+          birthday: row[7]
+        }
+        if (i > 0 && row) {
+          const Vip = await ctx.model.Vip.findOne({
+            cardId: params.cardId
+          }).exec();
+          if(Vip) {
+            Vip.phone = params.phone
+            Vip.sex = params.sex
+            Vip.birthday = params.birthday
+          }
+          await Vip.save()
+        }
+      }
+    } catch (e) {
+      console.log('err', e)
+    }
+  }
+  async addUserAndPhone(data = {}){
+    const ctx = this.ctx;
+    const app = this.app;
+    const { phone, sex, birthday, cardId } = data
+    const UserAndPhone = ctx.model.UserAndPhone({
+      id: ctx.helper.generateId(),
+      phone,
+      sex,
+      birthday,
+      cardId
+    });
+    await UserAndPhone.save();
   }
 }
 module.exports = VipService;

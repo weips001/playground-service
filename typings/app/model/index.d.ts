@@ -9,6 +9,7 @@ import ExportSchool = require('../../../app/model/school');
 import ExportShoppingRecord = require('../../../app/model/shoppingRecord');
 import ExportStudent = require('../../../app/model/student');
 import ExportUser = require('../../../app/model/user');
+import ExportUserAndPhone = require('../../../app/model/userAndPhone');
 import ExportVip = require('../../../app/model/vip');
 
 declare module 'egg' {
@@ -20,6 +21,7 @@ declare module 'egg' {
     ShoppingRecord: ReturnType<typeof ExportShoppingRecord>;
     Student: ReturnType<typeof ExportStudent>;
     User: ReturnType<typeof ExportUser>;
+    UserAndPhone: ReturnType<typeof ExportUserAndPhone>;
     Vip: ReturnType<typeof ExportVip>;
   }
 }
