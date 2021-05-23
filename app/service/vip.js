@@ -246,5 +246,54 @@ class VipService extends Service {
     const res = await this.readFile(file.filepath)
     return res
   }
+  async vipUserUpload(file) {
+    const res = await this.readVipUserUpload(file.filepath)
+    return res
+  }
+  async readVipUserUpload(filePath) {
+    const ctx = this.ctx;
+    const app = this.app;
+    try {
+      var sheets = xlsx.parse(filePath);
+      const sheet = sheets[0]
+      const name = sheet['name']
+
+      for (let i = 0; i < sheet.data.length; i++) {
+        const row = sheet['data'][i]
+        const params = {
+          cardId: row[0],
+          sex: row[3] === '男' ? '0' : '1',
+          phone: row[4],
+          birthday: row[7]
+        }
+        if (i > 0 && row) {
+          const Vip = await ctx.model.Vip.findOne({
+            cardId: params.cardId
+          }).exec();
+          if(Vip) {
+            Vip.phone = params.phone
+            Vip.sex = params.sex
+            Vip.birthday = params.birthday
+          }
+          await Vip.save()
+        }
+      }
+    } catch (e) {
+      console.log('err', e)
+    }
+  }
+  async addUserAndPhone(data = {}){
+    const ctx = this.ctx;
+    const app = this.app;
+    const { phone, sex, birthday, cardId } = data
+    const UserAndPhone = ctx.model.UserAndPhone({
+      id: ctx.helper.generateId(),
+      phone,
+      sex,
+      birthday,
+      cardId
+    });
+    await UserAndPhone.save();
+  }
 }
 module.exports = VipService;

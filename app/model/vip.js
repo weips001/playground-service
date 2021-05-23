@@ -22,6 +22,10 @@ module.exports = app => {
       type: Number,
       default: 0
     }, // 充值总次数
+    usedTotal: {
+      type: Number,
+      default: 0
+    },
     total: {
       type: Number,
       default: 0
