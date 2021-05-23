@@ -14,6 +14,10 @@ module.exports = app => {
       type: Number,
       default: 0
     },
+    isYearCard: {
+      type: Boolean,
+      default: false
+    },
     nowMoney: {
       type: Number,
       default: 0
