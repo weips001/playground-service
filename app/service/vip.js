@@ -89,6 +89,9 @@ class VipService extends Service {
     if (typeof data.name !== 'undefined') {
       Vip.name = data.name;
     }
+    if (typeof data.sex !== 'undefined') {
+      Vip.sex = data.sex;
+    }
     if (typeof data.remark !== 'undefined') {
       Vip.remark = data.remark;
     }
