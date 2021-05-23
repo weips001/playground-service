@@ -197,15 +197,16 @@ class VipService extends Service {
 
       for (let i = 0; i < sheet.data.length; i++) {
         const row = sheet['data'][i]
+        const overdate = row[13] ? new Date(row[13]) : ''
         const params = {
           createTime: row[1],
           cardId: row[2],
           name: row[4],
-          money: row[8],
-          total: row[9],
-          restTotal: row[10],
-          usedTotal: row[11],
-          overdate: row[13],
+          money: Number(row[8]),
+          total: Number(row[9]),
+          restTotal: Number(row[10]),
+          usedTotal: Number(row[11]),
+          overdate,
           remark: row[15],
           cardType: Number(row[10]) == -1 ? '1' : '0',
         }
