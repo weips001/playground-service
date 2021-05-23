@@ -42,9 +42,6 @@ class VipService extends Service {
       };
     }
     let isYearCard = false
-    if(nowTotal === -1) {
-      isYearCard = true
-    }
     // if()
     const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
@@ -203,7 +200,6 @@ class VipService extends Service {
     try {
       var sheets = xlsx.parse(filePath);
       console.log(sheets.name)
-      let record = []
       let successNum = 0
       let errorNum = 0
       let errInfo = []
