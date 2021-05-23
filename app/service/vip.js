@@ -34,13 +34,13 @@ class VipService extends Service {
     const ctx = this.ctx;
     const app = this.app;
     const { name, phone, cardId, cardType, money, sex, remark, birthday, total, createTime, overdate } = data
-    const exist = await this.nameExist(cardId);
-    if (exist) {
-      return {
-        code: 1,
-        msg: '卡号已存在',
-      };
-    }
+    // const exist = await this.nameExist(cardId);
+    // if (exist) {
+    //   return {
+    //     code: 1,
+    //     msg: '卡号已存在',
+    //   };
+    // }
     let isYearCard = false
     if(data.total === -1) {
       isYearCard = true
@@ -191,13 +191,16 @@ class VipService extends Service {
       for (let i = 0; i < sheet.data.length; i++) {
         const row = sheet['data'][i]
         const params = {
-          cardId: row[0],
-          cardType: Number(row[1]) === 1 ? '0' : '1',
-          name: row[2],
-          sex: row[3] === '男' ? '0' : '1',
-          phone: row[4],
-          createTime: row[5],
-          birthday: row[7]
+          createTime: row[1],
+          cardId: row[2],
+          name: row[4],
+          money: row[8],
+          total: row[9],
+          restTotal: row[10],
+          usedTotal: row[11],
+          overdate: row[13],
+          remark: row[15],
+          cardType: Number(row[10]) == -1 ? '1' : '0',
         }
         if (i > 0 && row) {
           const data = await this.add(params)
