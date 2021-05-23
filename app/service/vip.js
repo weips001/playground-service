@@ -33,7 +33,7 @@ class VipService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
     const app = this.app;
-    const { cardId, name, phone, sex, cardType, remark, birthday, money, total, payTotal, totalRest, payTime, record, createTime } = data
+    const { cardId, name, phone, sex, cardType, remark, birthday, money, nowMoney, total, payTotal, totalRest, payTime, createTime } = data
     const exist = await this.nameExist(cardId);
     if (exist) {
       return {
@@ -41,6 +41,8 @@ class VipService extends Service {
         msg: '卡号已存在',
       };
     }
+    let isYearCard = false
+    // if()
     const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
       cardId,
@@ -53,9 +55,10 @@ class VipService extends Service {
       birthday,
       sex,
       totalRest,
+      nowMoney,
       payTotal,
       payTime,
-      record,
+      isYearCard,
       createTime
     });
     await Vip.save();
@@ -76,6 +79,11 @@ class VipService extends Service {
         msg: 'Vip不存在',
       };
     }
+    let isYearCard = false
+    if(data.nowTotal === -1) {
+      isYearCard = true
+      Vip.isYearCard = isYearCard
+    }
     if (typeof data.name !== 'undefined') {
       Vip.name = data.name;
     }
@@ -91,6 +99,28 @@ class VipService extends Service {
     if (typeof data.overdate !== 'undefined') {
       Vip.overdate = data.overdate;
     }
+    if (typeof data.deleteNum !== 'undefined') {
+      let num =  Number(Vip.totalRest) - Number(data.deleteNum);
+      if (num < 0 && !Vip.isYearCard) {
+        return {
+          success: false,
+          msg: '次数已不够用了，请充值',
+          code: 1
+        }
+      }
+      Vip.totalRest = Number(Vip.totalRest) - Number(data.deleteNum);
+      if(Vip.isYearCard) {
+        Vip.totalRest = -1
+      }
+      // 添加一跳扣次记录
+      await this.ctx.service.shoppingRecord.add({
+        cardId: Vip.cardId,
+        name: Vip.name,
+        phone: Vip.phone,
+        cardType: Vip.cardType,
+        shoppingNum: data.deleteNum
+      })
+    }
     if (typeof data.nowMoney !== 'undefined') {
       Vip.nowMoney = data.nowMoney;
       Vip.money = Number(Vip.money) + Number(data.nowMoney);
@@ -101,29 +131,12 @@ class VipService extends Service {
         cardType: Vip.cardType,
         buyMoney: data.nowMoney
       })
+      Vip.rechargeNum = Vip.rechargeNum + 1
     }
     if (typeof data.nowTotal !== 'undefined') {
       Vip.totalRest = Number(Vip.totalRest) + Number(data.nowTotal);
       Vip.total = Number(Vip.total) + Number(data.nowTotal);
       // 添加一条充值记录
-    }
-    if (typeof data.deleteNum !== 'undefined') {
-      Vip.totalRest = Number(Vip.totalRest) - Number(data.deleteNum);
-      if (Vip.totalRest === 0) {
-        return {
-          success: false,
-          msg: '没有可扣的次数了',
-          code: 1
-        }
-      }
-      // 添加一跳扣次记录
-      await this.ctx.service.shoppingRecord.add({
-        cardId: Vip.cardId,
-        name: Vip.name,
-        phone: Vip.phone,
-        cardType: Vip.cardType,
-        shoppingNum: data.deleteNum
-      })
     }
     Vip.updateTime = new Date();
     await Vip.save();
@@ -187,11 +200,8 @@ class VipService extends Service {
 
   }
   async readFile(filePath) {
-    console.log(filePath)
     try {
       var sheets = xlsx.parse(filePath);
-      console.log(sheets)
-      let record = []
       let successNum = 0
       let errorNum = 0
       let errInfo = []
@@ -200,7 +210,6 @@ class VipService extends Service {
 
       for (let i = 0; i < sheet.data.length; i++) {
         const row = sheet['data'][i]
-        // console.log(row)
         const params = {
           cardId: row[0],
           cardType: Number(row[1]) === 1 ? '0' : '1',
@@ -213,7 +222,7 @@ class VipService extends Service {
         if (i > 0 && row) {
           const data = await this.add(params)
           if (data.code === 0) {
-            console.log(successNum)
+            // console.log(successNum)
             successNum++
           } else {
             errorNum++
@@ -221,9 +230,8 @@ class VipService extends Service {
               index: i,
               msg: data.msg
             })
-            console.log(data.msg)
+            // console.log(data.msg)
           }
-
         }
       }
       if (errorNum > 0) {
@@ -248,9 +256,7 @@ class VipService extends Service {
     }
   }
   async uploadFile(file) {
-    console.log('-----', file)
     const res = await this.readFile(file.filepath)
-    console.log('res', res)
     return res
   }
 }
