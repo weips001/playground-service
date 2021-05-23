@@ -120,6 +120,9 @@ class VipService extends Service {
     }
     Vip.updateTime = new Date();
     await Vip.save();
+    if(Vip.total === 0) {
+      await Vip.remove();
+    }
     return {
       success: true,
       msg: '修改成功',
