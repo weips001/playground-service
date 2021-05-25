@@ -14,8 +14,9 @@ class VipController extends Controller {
       filter['cardId'] = new RegExp(ctx.helper.escapeStringRegExp(query.cardId), 'i');
     }
     if (query.phone) {
-      // filter['phone'] = new RegExp(ctx.helper.escapeStringRegExp(query.phone), 'i');
-      filter['phone'] = query.phone
+      filter['phone'] = new RegExp(ctx.helper.escapeStringRegExp(query.phone), 'i');
+      // 处理数据时使用
+      // filter['phone'] = query.phone
     }
     if (query.name) {
       filter['name'] = new RegExp(ctx.helper.escapeStringRegExp(query.name), 'i');
