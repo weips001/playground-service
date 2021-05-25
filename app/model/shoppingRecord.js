@@ -11,6 +11,10 @@ module.exports = app => {
 		cardId: String, // 会员卡号
 		cardType: String, // 会员卡类型 0-次卡 -1 时间卡
     shoppingNum: Number,
+    consumeTime: {
+      type: Date,
+      default: new Date()
+    },
     createTime: {
       type: Date,
       default: new Date()

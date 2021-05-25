@@ -12,6 +12,8 @@ module.exports = app => {
   router.post('/api/login', controller.login.login);
   router.post('/api/register', controller.login.register);
   router.get('/api/init', controller.init.init);
+  router.get('/api/shoppingRecord', controller.shoppingRecord.list);
+  router.post('/api/uploadConsumeRecord', controller.shoppingRecord.uploadFile);
 
   require('./role')(app);
   require('./user')(app);

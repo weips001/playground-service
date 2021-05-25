@@ -6,6 +6,12 @@ const md5 = require('md5-node');
 class VipService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
+    filter = {
+      ...filter,
+      restTotal: {
+        $ne: 0
+      }
+    }
     const [list, total] = await Promise.all([
       ctx.model.Vip.find(filter).skip(offset).limit(limit)
         .lean()
@@ -122,9 +128,9 @@ class VipService extends Service {
     }
     Vip.updateTime = new Date();
     await Vip.save();
-    if(Vip.restTotal === 0) {
-      await Vip.remove();
-    }
+    // if(Vip.restTotal === 0) {
+    //   await Vip.remove();
+    // }
     return {
       success: true,
       msg: '修改成功',
@@ -180,9 +186,6 @@ class VipService extends Service {
     };
     const User = await ctx.model.User.findOne(filter).lean().exec();
     return !!User;
-  }
-  async saveItem() {
-
   }
   async readFile(filePath) {
     try {
