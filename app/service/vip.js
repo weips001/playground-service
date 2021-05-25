@@ -259,7 +259,6 @@ class VipService extends Service {
       var sheets = xlsx.parse(filePath);
       const sheet = sheets[0]
       const name = sheet['name']
-
       for (let i = 0; i < sheet.data.length; i++) {
         const row = sheet['data'][i]
         const params = {
@@ -268,17 +267,22 @@ class VipService extends Service {
           phone: row[4],
           birthday: row[7]
         }
-        if (i > 0 && row) {
-          const Vip = await ctx.model.Vip.findOne({
-            cardId: params.cardId
-          }).exec();
-          if(Vip) {
-            Vip.phone = params.phone
-            Vip.sex = params.sex
-            Vip.birthday = params.birthday
+        let Vip = await ctx.model.Vip.find({
+          cardId: params.cardId
+        }).exec();
+        console.log(Vip, 2744444)
+        if(Array.isArray(Vip) && Vip.length > 0) {
+          for(let k=0; k<Vip.length; k++) {
+            Vip[k].phone = params.phone
+            Vip[k].sex = params.sex
+            Vip[k].birthday = params.birthday
+            await Vip[k].save()
           }
-          await Vip.save()
         }
+      }
+      return {
+        code: 0,
+        msg: '导入成功'
       }
     } catch (e) {
       console.log('err', e)
