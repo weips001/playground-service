@@ -53,7 +53,6 @@ class VipController extends Controller {
     ctx.body = await ctx.service.vip.uploadFile(ctx.request.files[0]);
   }
   async vipUserUpload() {
-    console.log('in')
     const ctx = this.ctx;
     ctx.body = await ctx.service.vip.vipUserUpload(ctx.request.files[0]);
   }
