@@ -6,6 +6,24 @@ class GameBiController extends Controller {
   async list() {
     const ctx = this.ctx;
     const query = ctx.query;
+    const filter = {
+      total: {
+        '$ne': 0
+      }
+    };
+    if (query.phone) {
+      filter['phone'] = new RegExp(ctx.helper.escapeStringRegExp(query.phone), 'i');
+    }
+    if (query.name) {
+      filter['name'] = new RegExp(ctx.helper.escapeStringRegExp(query.name), 'i');
+    }
+    const limit = parseInt(query.pageSize || 10);
+    const offset = (parseInt(query.current || 1) - 1) * limit;
+    this.ctx.body = await this.ctx.service.gameBi.list(filter, limit, offset);
+  }
+  async payList() {
+    const ctx = this.ctx;
+    const query = ctx.query;
     const filter = {};
     if (query.phone) {
       filter['phone'] = new RegExp(ctx.helper.escapeStringRegExp(query.phone), 'i');
