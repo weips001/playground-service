@@ -29,10 +29,7 @@ class VipService extends Service {
   async bugRecordlist(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     filter = {
-      ...filter,
-      restTotal: {
-        $ne: 0
-      }
+      ...filter
     }
     const [list, total] = await Promise.all([
       ctx.model.Vip.find(filter).skip(offset).limit(limit)
