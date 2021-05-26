@@ -36,6 +36,7 @@ class gameBiService extends Service {
       name: data.name,
       phone: data.phone,
       total: data.total,
+      restTotal: data.total,
       money: data.money,
       overdate: data.overdate,
       remark: data.remark
@@ -87,7 +88,7 @@ class gameBiService extends Service {
       };
     }
     if (typeof data.deleteNum !== 'undefined') {
-      let num  = Number(gameBiModel.total) - Number(data.deleteNum);
+      let num = Number(gameBiModel.restTotal) - Number(data.deleteNum);
       if (num < 0) {
         return {
           success: false,
@@ -95,7 +96,7 @@ class gameBiService extends Service {
           code: 1
         }
       }
-      gameBiModel.total = Number(gameBiModel.total) - Number(data.deleteNum);
+      gameBiModel.restTotal = Number(gameBiModel.restTotal) - Number(data.deleteNum);
       // 添加一跳扣次记录
       await this.ctx.service.gameBiRecord.add({
         id: ctx.helper.generateId(),

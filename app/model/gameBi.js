@@ -6,9 +6,10 @@ module.exports = app => {
 
   const GameBiSchema = new Schema({
     id: String,
-    name: String,  // 角色名称
-    phone: String,  // 权限列表
-		total: Number,
+    name: String, // 角色名称
+    phone: String, // 权限列表
+    restTotal: Number,
+    total: Number,
     money: Number,
     overdate: String, // 有效期
     remark: String,
