@@ -26,6 +26,28 @@ class VipService extends Service {
       code: 0
     };
   }
+  async list(filter, limit = 10, offset = 0) {
+    const ctx = this.ctx;
+    filter = {
+      ...filter,
+      restTotal: {
+        $ne: 0
+      }
+    }
+    const [list, total] = await Promise.all([
+      ctx.model.Vip.find(filter).skip(offset).limit(limit)
+        .lean()
+        .exec(),
+      ctx.model.Vip.countDocuments(filter)
+        .lean()
+        .exec(),
+    ]);
+    return {
+      data: list,
+      total,
+      code: 0
+    };
+  }
   async get(id) {
     const ctx = this.ctx;
     const doc = await ctx.model.Vip.findOne({
@@ -66,14 +88,14 @@ class VipService extends Service {
       usedTotal
     });
     await Vip.save();
-    await this.ctx.service.buyRecord.add({
-      id: ctx.helper.generateId(),
-      cardId: Vip.cardId,
-      name: Vip.name,
-      phone: Vip.phone,
-      cardType: Vip.cardType,
-      buyMoney: data.nowMoney
-    })
+    // await this.ctx.service.buyRecord.add({
+    //   id: ctx.helper.generateId(),
+    //   cardId: Vip.cardId,
+    //   name: Vip.name,
+    //   phone: Vip.phone,
+    //   cardType: Vip.cardType,
+    //   buyMoney: data.nowMoney
+    // })
     return {
       success: true,
       msg: '添加成功',

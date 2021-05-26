@@ -3,6 +3,7 @@
 module.exports = app => {
   const { router, controller } = app;
   router.get('/api/vip', controller.vip.list);
+  router.get('/api/vipBuyRecord', controller.vip.bugRecordlist);
   router.get('/api/vip/:id', controller.vip.get);
   router.post('/api/vip', controller.vip.add);
   router.put('/api/vip/:id', controller.vip.update);

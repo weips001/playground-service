@@ -25,6 +25,28 @@ class VipController extends Controller {
     const offset = (parseInt(query.current || 1) - 1) * limit;
     this.ctx.body = await this.ctx.service.vip.list(filter, limit, offset);
   }
+  async bugRecordlist() {
+    const ctx = this.ctx;
+    const query = ctx.query;
+    const filter = {};
+    if (query.cardType) {
+      filter['cardType'] = query.cardType
+    }
+    if (query.cardId) {
+      filter['cardId'] = new RegExp(ctx.helper.escapeStringRegExp(query.cardId), 'i');
+    }
+    if (query.phone) {
+      filter['phone'] = new RegExp(ctx.helper.escapeStringRegExp(query.phone), 'i');
+      // 处理数据时使用
+      // filter['phone'] = query.phone
+    }
+    if (query.name) {
+      filter['name'] = new RegExp(ctx.helper.escapeStringRegExp(query.name), 'i');
+    }
+    const limit = parseInt(query.pageSize || 10);
+    const offset = (parseInt(query.current || 1) - 1) * limit;
+    this.ctx.body = await this.ctx.service.vip.bugRecordlist(filter, limit, offset);
+  }
   async get() {
     const ctx = this.ctx;
     const id = ctx.params.id;
