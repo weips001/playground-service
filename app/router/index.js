@@ -13,6 +13,7 @@ module.exports = app => {
   router.post('/api/register', controller.login.register);
   router.get('/api/init', controller.init.init);
   router.get('/api/shoppingRecord', controller.shoppingRecord.list);
+  router.get('/api/gameBiRecord', controller.gameBiRecord.list);
   router.post('/api/uploadConsumeRecord', controller.shoppingRecord.uploadFile);
 
   require('./role')(app);

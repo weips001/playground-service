@@ -4,6 +4,7 @@
 import 'egg';
 import ExportBuyRecord = require('../../../app/controller/buyRecord');
 import ExportGameBi = require('../../../app/controller/gameBi');
+import ExportGameBiRecord = require('../../../app/controller/gameBiRecord');
 import ExportInit = require('../../../app/controller/init');
 import ExportLogin = require('../../../app/controller/login');
 import ExportRole = require('../../../app/controller/role');
@@ -17,6 +18,7 @@ declare module 'egg' {
   interface IController {
     buyRecord: ExportBuyRecord;
     gameBi: ExportGameBi;
+    gameBiRecord: ExportGameBiRecord;
     init: ExportInit;
     login: ExportLogin;
     role: ExportRole;

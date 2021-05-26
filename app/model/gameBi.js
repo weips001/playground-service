@@ -8,8 +8,10 @@ module.exports = app => {
     id: String,
     name: String,  // 角色名称
     phone: String,  // 权限列表
-		biNumber: Number,
-		record: [],
+		total: Number,
+    money: Number,
+    overdate: String, // 有效期
+    remark: String,
     createTime: {
       type: Date,
       default: new Date()

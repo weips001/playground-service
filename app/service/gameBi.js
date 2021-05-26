@@ -31,20 +31,14 @@ class gameBiService extends Service {
   }
   async add(data = {}) {
     const ctx = this.ctx;
-    const app = this.app;
-    const exist = await this.nameExist(data.name, data.id);
-    if (exist) {
-      return {
-        code: 1,
-        msg: '驾校名重复',
-      };
-    }
     const gameBiModel = ctx.model.GameBi({
       id: ctx.helper.generateId(),
       name: data.name,
       phone: data.phone,
-      biNumber: data.biNumber,
-      record: data.record,
+      total: data.total,
+      money: data.money,
+      overdate: data.overdate,
+      remark: data.remark
     });
     await gameBiModel.save();
     return {
@@ -70,11 +64,46 @@ class gameBiService extends Service {
     if (typeof data.phone !== 'undefined') {
       gameBiModel.phone = data.phone;
     }
-    if (typeof data.biNumber !== 'undefined') {
-      gameBiModel.biNumber = data.biNumber;
+    if (typeof data.remark !== 'undefined') {
+      gameBiModel.remark = data.remark;
     }
-    if (typeof data.record !== 'undefined') {
-      gameBiModel.record = data.record;
+    gameBiModel.updateTime = new Date();
+    await gameBiModel.save();
+    return {
+      success: true,
+      msg: '修改成功',
+      code: 0
+    };
+  }
+  async updateReduce(id, data = {}) {
+    const ctx = this.ctx;
+    const gameBiModel = await ctx.model.GameBi.findOne({
+      id
+    }).exec();
+    if (!gameBiModel) {
+      return {
+        code: 1,
+        msg: 'gameBi不存在',
+      };
+    }
+    if (typeof data.deleteNum !== 'undefined') {
+      let num  = Number(gameBiModel.total) - Number(data.deleteNum);
+      if (num < 0) {
+        return {
+          success: false,
+          msg: '游戏币不够用了，请充值',
+          code: 1
+        }
+      }
+      gameBiModel.total = Number(gameBiModel.total) - Number(data.deleteNum);
+      // 添加一跳扣次记录
+      await this.ctx.service.gameBiRecord.add({
+        id: ctx.helper.generateId(),
+        name: gameBiModel.name,
+        phone: gameBiModel.phone,
+        gameBiNum: data.deleteNum,
+        consumeTime: data.consumeTime
+      })
     }
     gameBiModel.updateTime = new Date();
     await gameBiModel.save();

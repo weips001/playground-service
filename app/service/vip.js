@@ -57,15 +57,7 @@ class VipService extends Service {
   }
   async add(data = {}) {
     const ctx = this.ctx;
-    const app = this.app;
     const { name, phone, restTotal, cardId, cardType, money, sex, remark, birthday, total, createTime, overdate, usedTotal } = data
-    // const exist = await this.nameExist(cardId);
-    // if (exist) {
-    //   return {
-    //     code: 1,
-    //     msg: '卡号已存在',
-    //   };
-    // }
     let isYearCard = restTotal === -1
     const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
@@ -85,14 +77,6 @@ class VipService extends Service {
       usedTotal
     });
     await Vip.save();
-    // await this.ctx.service.buyRecord.add({
-    //   id: ctx.helper.generateId(),
-    //   cardId: Vip.cardId,
-    //   name: Vip.name,
-    //   phone: Vip.phone,
-    //   cardType: Vip.cardType,
-    //   buyMoney: data.nowMoney
-    // })
     return {
       success: true,
       msg: '添加成功',

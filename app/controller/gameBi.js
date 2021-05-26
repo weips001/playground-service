@@ -36,6 +36,11 @@ class GameBiController extends Controller {
     const id = ctx.params.id;
     ctx.body = await ctx.service.gameBi.update(id, ctx.request.body);
   }
+  async updateReduce() {
+    const ctx = this.ctx;
+    const id = ctx.params.id;
+    ctx.body = await ctx.service.gameBi.updateReduce(id, ctx.request.body);
+  }
 }
 
 module.exports = GameBiController;
