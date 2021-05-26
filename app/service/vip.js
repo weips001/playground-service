@@ -26,7 +26,7 @@ class VipService extends Service {
       code: 0
     };
   }
-  async list(filter, limit = 10, offset = 0) {
+  async bugRecordlist(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     filter = {
       ...filter,
