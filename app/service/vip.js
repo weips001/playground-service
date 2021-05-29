@@ -126,6 +126,7 @@ class VipService extends Service {
         name: Vip.name,
         phone: Vip.phone,
         cardType: Vip.cardType,
+        consumeTime: data.createTime,
         shoppingNum: data.deleteNum
       })
     }
