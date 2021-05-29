@@ -2,6 +2,7 @@
 
 const Service = require('egg').Service;
 const md5 = require('md5-node');
+const xlsx = require('node-xlsx')
 class gameBiService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
@@ -161,34 +162,44 @@ class gameBiService extends Service {
       let errInfo = []
       const sheet = sheets[0]
       const name = sheet['name']
-
       for (let i = 0; i < sheet.data.length; i++) {
-        const row = sheet['data'][i]
-        const overdate = row[13] ? new Date(row[13]) : ''
-        const params = {
-          createTime: row[1],
-          cardId: row[2],
-          name: row[4],
-          money: Number(row[8]),
-          total: Number(row[9]),
-          restTotal: Number(row[10]),
-          usedTotal: Number(row[11]),
-          overdate,
-          remark: row[15],
-          cardType: Number(row[10]) == -1 ? '1' : '0',
-        }
-        if (i > 0 && row) {
-          const data = await this.add(params)
-          if (data.code === 0) {
-            successNum++
-          } else {
-            errorNum++
-            errInfo.push({
-              index: i,
-              msg: data.msg
-            })
+        if (i > 0) {
+          // 每一行数据
+					const row = sheet['data'][i]
+          if (row.length) {
+            const len = row.length
+            const unit = row[len - 1]
+            let [date, num] = unit.split('/')
+            num = Number(num)
+            if (Number.isNaN(num)) {
+              errInfo.push({
+                index: i,
+                msg: '不是数字'
+              })
+              errorNum++
+            } else {
+              const params = {
+                name: row[0],
+                phone: row[1],
+                total: num,
+                restTotal: num,
+                money: '',
+                overdate: '',
+                remark: ''
+              }
+              const {code, msg} = await this.add(params)
+              if(code === 0) {
+                successNum++
+              } else {
+                errInfo.push({
+                  index: i,
+                  msg: msg
+                })
+                errorNum++
+              }
+            }
           }
-        }
+				}
       }
       if (errorNum > 0) {
         return {
@@ -210,6 +221,10 @@ class gameBiService extends Service {
     } catch (e) {
       console.log('err', e)
     }
+  }
+  async uploadFile(file) {
+    const res = await this.readFile(file.filepath)
+    return res
   }
 }
 module.exports = gameBiService;

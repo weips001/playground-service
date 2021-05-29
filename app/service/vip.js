@@ -320,5 +320,13 @@ class VipService extends Service {
       successNum
     }
   }
+  async getUserByPhone(phone) {
+    const ctx = this.ctx
+    const user = await ctx.model.Vip.findOne({phone}).lean().exec();
+    return {
+      code: 0,
+      data: user
+    }
+  }
 }
 module.exports = VipService;
