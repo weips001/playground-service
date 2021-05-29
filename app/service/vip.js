@@ -14,11 +14,11 @@ class VipService extends Service {
     }
     const [list, total] = await Promise.all([
       ctx.model.Vip.find(filter).skip(offset).limit(limit)
-        .lean()
-        .exec(),
+      .lean()
+      .exec(),
       ctx.model.Vip.countDocuments(filter)
-        .lean()
-        .exec(),
+      .lean()
+      .exec(),
     ]);
     return {
       data: list,
@@ -33,11 +33,11 @@ class VipService extends Service {
     }
     const [list, total] = await Promise.all([
       ctx.model.Vip.find(filter).skip(offset).limit(limit)
-        .lean()
-        .exec(),
+      .lean()
+      .exec(),
       ctx.model.Vip.countDocuments(filter)
-        .lean()
-        .exec(),
+      .lean()
+      .exec(),
     ]);
     return {
       data: list,
@@ -57,7 +57,21 @@ class VipService extends Service {
   }
   async add(data = {}) {
     const ctx = this.ctx;
-    const { name, phone, restTotal, cardId, cardType, money, sex, remark, birthday, total, createTime, overdate, usedTotal } = data
+    const {
+      name,
+      phone,
+      restTotal,
+      cardId,
+      cardType,
+      money,
+      sex,
+      remark,
+      birthday,
+      total,
+      createTime,
+      overdate,
+      usedTotal
+    } = data
     let isYearCard = restTotal === -1
     const Vip = ctx.model.Vip({
       id: ctx.helper.generateId(),
@@ -106,8 +120,11 @@ class VipService extends Service {
     if (typeof data.phone !== 'undefined') {
       Vip.phone = data.phone;
     }
+    if (typeof data.createTime !== 'undefined') {
+      Vip.createTime = data.createTime;
+    }
     if (typeof data.deleteNum !== 'undefined') {
-      let num =  Number(Vip.restTotal) - Number(data.deleteNum);
+      let num = Number(Vip.restTotal) - Number(data.deleteNum);
       if (num < 0 && !Vip.isYearCard) {
         return {
           success: false,
@@ -116,7 +133,8 @@ class VipService extends Service {
         }
       }
       Vip.restTotal = Number(Vip.restTotal) - Number(data.deleteNum);
-      if(Vip.isYearCard) {
+      Vip.usedTotal = Number(Vip.usedTotal) + Number(data.deleteNum);
+      if (Vip.isYearCard) {
         Vip.restTotal = -1
       }
       // 添加一跳扣次记录
@@ -278,8 +296,8 @@ class VipService extends Service {
           cardId: params.cardId
         }).exec();
         console.log(Vip, 2744444)
-        if(Array.isArray(Vip) && Vip.length > 0) {
-          for(let k=0; k<Vip.length; k++) {
+        if (Array.isArray(Vip) && Vip.length > 0) {
+          for (let k = 0; k < Vip.length; k++) {
             Vip[k].phone = params.phone
             Vip[k].sex = params.sex
             Vip[k].birthday = params.birthday
@@ -296,14 +314,21 @@ class VipService extends Service {
     }
   }
   async syncUserInfo() {
-    const {ctx} = this
+    const {
+      ctx
+    } = this
     let successNum = 0
     let errorNum = 0
-    const {data, total} = await ctx.service.shoppingRecord.list({}, 1000000, 0)
+    const {
+      data,
+      total
+    } = await ctx.service.shoppingRecord.list({}, 1000000, 0)
     for (let i = 0; i < total; i++) {
       const item = data[i]
-      const user = await ctx.model.Vip.findOne({cardId: item.cardId}).lean().exec();
-      if(user) {
+      const user = await ctx.model.Vip.findOne({
+        cardId: item.cardId
+      }).lean().exec();
+      if (user) {
         const record = await ctx.model.ShoppingRecord.findById(item._id)
         // console.log(record)
         record.phone = user.phone

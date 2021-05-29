@@ -1,7 +1,10 @@
 'use strict';
 
 module.exports = app => {
-  const { router, controller } = app;
+  const {
+    router,
+    controller
+  } = app;
   router.get('/api/vip', controller.vip.list);
   router.get('/api/vipBuyRecord', controller.vip.bugRecordlist);
   router.get('/api/vip/:id', controller.vip.get);
@@ -15,4 +18,8 @@ module.exports = app => {
   router.get('/api/getUserByPhone', controller.vip.getUserByPhone);
   // 同步用户手机号
   router.get('/api/syncUserInfo', controller.vip.syncUserInfo);
+  //  查询usedTotal
+  router.get('/api/filterUsedTotal', controller.vip.filterUsedTotal)
+  // 修改usedTotal
+  router.get('/api/changeUsedTotal', controller.vip.changeUsedTotal)
 };
