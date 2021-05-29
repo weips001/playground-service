@@ -153,5 +153,63 @@ class gameBiService extends Service {
     const User = await ctx.model.User.findOne(filter).lean().exec();
     return !!User;
   }
+  async readFile(filePath) {
+    try {
+      var sheets = xlsx.parse(filePath);
+      let successNum = 0
+      let errorNum = 0
+      let errInfo = []
+      const sheet = sheets[0]
+      const name = sheet['name']
+
+      for (let i = 0; i < sheet.data.length; i++) {
+        const row = sheet['data'][i]
+        const overdate = row[13] ? new Date(row[13]) : ''
+        const params = {
+          createTime: row[1],
+          cardId: row[2],
+          name: row[4],
+          money: Number(row[8]),
+          total: Number(row[9]),
+          restTotal: Number(row[10]),
+          usedTotal: Number(row[11]),
+          overdate,
+          remark: row[15],
+          cardType: Number(row[10]) == -1 ? '1' : '0',
+        }
+        if (i > 0 && row) {
+          const data = await this.add(params)
+          if (data.code === 0) {
+            successNum++
+          } else {
+            errorNum++
+            errInfo.push({
+              index: i,
+              msg: data.msg
+            })
+          }
+        }
+      }
+      if (errorNum > 0) {
+        return {
+          code: 1,
+          data: {
+            successNum,
+            errorNum,
+            errInfo
+          }
+        }
+      }
+      return {
+        code: 0,
+        data: {
+          successNum,
+          errorNum
+        }
+      }
+    } catch (e) {
+      console.log('err', e)
+    }
+  }
 }
 module.exports = gameBiService;

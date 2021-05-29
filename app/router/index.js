@@ -16,6 +16,7 @@ module.exports = app => {
   router.get('/api/gameBiRecord', controller.gameBiRecord.list);
   router.post('/api/uploadConsumeRecord', controller.shoppingRecord.uploadFile);
 
+
   require('./role')(app);
   require('./user')(app);
   require('./school')(app)
