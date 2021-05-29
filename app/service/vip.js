@@ -144,13 +144,8 @@ class VipService extends Service {
         name: Vip.name,
         phone: Vip.phone,
         cardType: Vip.cardType,
-<<<<<<< HEAD
-        shoppingNum: data.deleteNum,
-        consumeTime: data.createTime
-=======
         consumeTime: data.createTime,
         shoppingNum: data.deleteNum
->>>>>>> 4d95b8e8a98d04e8db0fdf041e47fecdd1fe62db
       })
     }
     Vip.updateTime = new Date();
@@ -319,14 +314,21 @@ class VipService extends Service {
     }
   }
   async syncUserInfo() {
-    const {ctx} = this
+    const {
+      ctx
+    } = this
     let successNum = 0
     let errorNum = 0
-    const {data, total} = await ctx.service.shoppingRecord.list({}, 1000000, 0)
+    const {
+      data,
+      total
+    } = await ctx.service.shoppingRecord.list({}, 1000000, 0)
     for (let i = 0; i < total; i++) {
       const item = data[i]
-      const user = await ctx.model.Vip.findOne({cardId: item.cardId}).lean().exec();
-      if(user) {
+      const user = await ctx.model.Vip.findOne({
+        cardId: item.cardId
+      }).lean().exec();
+      if (user) {
         const record = await ctx.model.ShoppingRecord.findById(item._id)
         // console.log(record)
         record.phone = user.phone

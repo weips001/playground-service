@@ -83,6 +83,49 @@ class VipController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.vip.syncUserInfo();
   }
+  async filterUsedTotal() {
+    const ctx = this.ctx;
+    const filter = {
+      restTotal: {
+        $ne: -1
+      }
+    }
+    const list = await ctx.model.Vip.find(filter).lean().exec()
+    console.log(list.length, 100)
+    let arr = list.filter(item => {
+      return item.total - item.usedTotal != item.restTotal
+    })
+    ctx.body = {
+      code: 0,
+      msg: '过滤成功',
+      arr
+    };
+  }
+  async changeUsedTotal() {
+    const ctx = this.ctx;
+    const filter = {
+      restTotal: {
+        $ne: -1
+      }
+    }
+    const list = await ctx.model.Vip.find(filter).lean().exec()
+    console.log(list.length, 100)
+    let arr = list.filter(item => {
+      return item.total - item.usedTotal != item.restTotal
+    })
+    for (let i = 0; i < arr.length; i++) {
+      const Vip = await ctx.model.Vip.findOne({
+        id: arr[i].id
+      }).exec()
+      console.log(Vip, 1222)
+      Vip.usedTotal = Vip.total - Vip.restTotal
+      await Vip.save()
+    }
+    ctx.body = {
+      code: 0,
+      msg: '过滤成功'
+    };
+  }
 }
 
 module.exports = VipController;
