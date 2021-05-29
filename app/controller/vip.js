@@ -79,6 +79,10 @@ class VipController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.vip.vipUserUpload(ctx.request.files[0]);
   }
+  async syncUserInfo() {
+    const ctx = this.ctx;
+    ctx.body = await ctx.service.vip.syncUserInfo();
+  }
 }
 
 module.exports = VipController;

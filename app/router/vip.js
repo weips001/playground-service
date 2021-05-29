@@ -11,4 +11,6 @@ module.exports = app => {
   router.delete('/api/vip/:id', controller.vip.remove);
   router.post('/api/vipUpload', controller.vip.uploadFile);
   router.post('/api/vipUserUpload', controller.vip.vipUserUpload);
+  // 同步用户手机号
+  router.get('/api/syncUserInfo', controller.vip.syncUserInfo);
 };
