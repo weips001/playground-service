@@ -13,7 +13,7 @@ class VipService extends Service {
       }
     }
     const [list, total] = await Promise.all([
-      ctx.model.Vip.find(filter).skip(offset).limit(limit)
+      ctx.model.Vip.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
       .lean()
       .exec(),
       ctx.model.Vip.countDocuments(filter)
@@ -32,7 +32,7 @@ class VipService extends Service {
       ...filter
     }
     const [list, total] = await Promise.all([
-      ctx.model.Vip.find(filter).skip(offset).limit(limit)
+      ctx.model.Vip.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
       .lean()
       .exec(),
       ctx.model.Vip.countDocuments(filter)
@@ -340,6 +340,14 @@ class VipService extends Service {
     return {
       code: 0,
       successNum
+    }
+  }
+  async getUserByPhone(phone) {
+    const ctx = this.ctx
+    const user = await ctx.model.Vip.findOne({phone}).lean().exec();
+    return {
+      code: 0,
+      data: user
     }
   }
 }

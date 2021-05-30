@@ -7,7 +7,7 @@ class ShoppingRecordService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     const [list, total] = await Promise.all([
-      ctx.model.ShoppingRecord.find(filter).skip(offset).limit(limit)
+      ctx.model.ShoppingRecord.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
         .lean()
         .exec(),
       ctx.model.ShoppingRecord.countDocuments(filter)

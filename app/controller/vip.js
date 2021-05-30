@@ -83,6 +83,11 @@ class VipController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.vip.syncUserInfo();
   }
+  async getUserByPhone() {
+    const ctx = this.ctx;
+    const phone = ctx.query.phone
+    ctx.body = await ctx.service.vip.getUserByPhone(phone);
+  }
   async filterUsedTotal() {
     const ctx = this.ctx;
     const filter = {
