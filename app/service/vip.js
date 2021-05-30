@@ -120,9 +120,6 @@ class VipService extends Service {
     if (typeof data.phone !== 'undefined') {
       Vip.phone = data.phone;
     }
-    if (typeof data.createTime !== 'undefined') {
-      Vip.createTime = data.createTime;
-    }
     if (typeof data.deleteNum !== 'undefined') {
       let num = Number(Vip.restTotal) - Number(data.deleteNum);
       if (num < 0 && !Vip.isYearCard) {
