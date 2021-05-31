@@ -22,16 +22,16 @@ class GameBiRecordService extends Service {
   }
   async add(data = {}) {
     const ctx = this.ctx;
-    const { name, phone, gameBiNum,consumeTime } = data
+    const { name, phone, gameBiNum,consumeTime, createTime } = data
     const GameBiRecord = ctx.model.GameBiRecord({
       id: ctx.helper.generateId(),
       name,
       phone,
       gameBiNum,
-      consumeTime
+      consumeTime,
+      createTime
     });
     const res = await GameBiRecord.save();
-    console.log('res', res)
     return {
       success: true,
       msg: '添加成功',
