@@ -14,8 +14,17 @@ class StatisticsService extends Service {
         }
       }
     }])
+    const total = await ctx.model.Vip.aggregate([{
+      $group: {
+        _id: '$cardType',
+        count: {
+          $sum: '$total'
+        }
+      }
+    }])
     return {
       data,
+      total,
       success: true,
       msg: '删除成功',
       code: 0,
