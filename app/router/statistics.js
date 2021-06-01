@@ -7,5 +7,5 @@ module.exports = app => {
   } = app;
   router.get('/api/getNotNum', controller.statistics.getNotNum);
   router.get('/api/getTodayMoney', controller.statistics.getTodayMoney);
-  router.post('/api/getTodayNum', controller.statistics.getTodayNum);
+  router.get('/api/getTodayNum', controller.statistics.getTodayNum);
 };

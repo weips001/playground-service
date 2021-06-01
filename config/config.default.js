@@ -45,7 +45,7 @@ module.exports = appInfo => {
       enable: false,
       ignoreJSON: true,
     },
-    domainWhiteList: [ '*' ], // 允许访问接口的白名单
+    domainWhiteList: ['*'], // 允许访问接口的白名单
   };
 
   config.static = {
@@ -63,7 +63,8 @@ module.exports = appInfo => {
 
   exports.mongoose = {
     client: {
-      url: 'mongodb://127.0.0.1:27017/playground',
+      // url: 'mongodb://127.0.0.1:27017/playground',
+      url: 'mongodb://39.99.228.79:27017/playground',
       options: {
         useNewUrlParser: true,
       },
