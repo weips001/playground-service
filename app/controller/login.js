@@ -30,7 +30,7 @@ class HomeController extends Controller {
       const token = app.jwt.sign({
         name: data.name
       }, app.config.jwt.secret, {
-        expiresIn: '60m',
+        expiresIn: '86400m',
       });
       UserModel.token = token;
       const schoolId = UserModel.schoolId
