@@ -7,15 +7,16 @@ class UserService extends Service {
     const ctx = this.ctx;
     const [list, total] = await Promise.all([
       ctx.model.User.find(filter).skip(offset).limit(limit)
-      .lean()
-      .exec(),
+        .lean()
+        .exec(),
       ctx.model.User.countDocuments(filter)
-      .lean()
-      .exec(),
+        .lean()
+        .exec(),
     ]);
     return {
-      list,
+      data: list,
       total,
+      success: true,
       code: 0
     };
   }
@@ -40,7 +41,7 @@ class UserService extends Service {
         msg: '改账号已存在',
       };
     }
-    if(data.role.length>0) {
+    if (data.role.length > 0) {
       const RoleModel = await ctx.model.Role.find({
         id: {
           $in: data.role
@@ -104,7 +105,7 @@ class UserService extends Service {
     }
     if (typeof data.role !== 'undefined') {
       UserModel.role = data.role;
-      if(data.role.length>0) {
+      if (data.role.length > 0) {
         const RoleModel = await ctx.model.Role.find({
           id: {
             $in: data.role
@@ -153,17 +154,17 @@ class UserService extends Service {
     const User = await ctx.model.User.findOne(filter).lean().exec();
     return !!User;
   }
-  async getCurrentUser(token,id) {
+  async getCurrentUser(token, id) {
     const ctx = this.ctx;
     const filter = {
       token,
     };
     const user = await ctx.model.User.findOne(filter).lean().exec();
-    if(id) {
+    if (id) {
       const school = await ctx.model.School.findOne({
         id: id
       }).lean().exec();
-      if(school && school.perioOfValidity && new Date()> school.perioOfValidity){
+      if (school && school.perioOfValidity && new Date() > school.perioOfValidity) {
         user.overdue = true
       }
     }

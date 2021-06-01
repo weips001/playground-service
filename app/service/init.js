@@ -15,7 +15,7 @@ class RoleService extends Service {
     const dataSon = {
       name: '韦鹏帅',
       role: ["-2"],
-      roleName: ['太子'],
+      roleName: ['太上皇'],
       callPhone: '13271591339'
     }
     const token = app.jwt.sign({

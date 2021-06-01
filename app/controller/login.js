@@ -11,13 +11,16 @@ class HomeController extends Controller {
       app
     } = this;
     const data = ctx.request.body;
-    data.password = md5(data.password);
-    const UserModel = await ctx.model.User.findOne(data).exec();
+    const filter = {
+      callPhone: data.callPhone,
+      password: md5(data.password)
+    }
+    const UserModel = await ctx.model.User.findOne(filter).exec();
     if (UserModel) {
-      if(UserModel.schoolId) {
-        const school = await ctx.model.School.findOne({id:UserModel.schoolId}).exec();
-        if(school && school.perioOfValidity && new Date()> school.perioOfValidity){
-          if(UserModel.role.includes(-2)){
+      if (UserModel.schoolId) {
+        const school = await ctx.model.School.findOne({ id: UserModel.schoolId }).exec();
+        if (school && school.perioOfValidity && new Date() > school.perioOfValidity) {
+          if (UserModel.role.includes(-2)) {
             UserModel.overdue = false
           } else {
             UserModel.overdue = true
@@ -27,7 +30,7 @@ class HomeController extends Controller {
       const token = app.jwt.sign({
         name: data.name
       }, app.config.jwt.secret, {
-        expiresIn: 60 * 60,
+        expiresIn: '60m',
       });
       UserModel.token = token;
       const schoolId = UserModel.schoolId
