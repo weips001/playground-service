@@ -4,7 +4,7 @@ const Service = require('egg').Service;
 const xlsx = require('node-xlsx')
 const md5 = require('md5-node');
 class VipService extends Service {
-  async list(filter, limit = 10, offset = 0) {
+  async list(filter, limit = 10, offset = 0, sorter) {
     const ctx = this.ctx;
     filter = {
       ...filter,
@@ -12,8 +12,9 @@ class VipService extends Service {
         $ne: 0
       }
     }
+    let sorterNum = sorter && sorter.overdate === 'ascend'?1:-1
     const [list, total] = await Promise.all([
-      ctx.model.Vip.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
+      ctx.model.Vip.find(filter).sort({createTime: sorterNum}).skip(offset).limit(limit)
       .lean()
       .exec(),
       ctx.model.Vip.countDocuments(filter)
@@ -292,7 +293,6 @@ class VipService extends Service {
         let Vip = await ctx.model.Vip.find({
           cardId: params.cardId
         }).exec();
-        console.log(Vip, 2744444)
         if (Array.isArray(Vip) && Vip.length > 0) {
           for (let k = 0; k < Vip.length; k++) {
             Vip[k].phone = params.phone
@@ -334,7 +334,6 @@ class VipService extends Service {
       } else {
         errorNum++
       }
-      console.log(successNum)
     }
     console.log('上传结束')
     return {

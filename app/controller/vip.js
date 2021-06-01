@@ -18,12 +18,16 @@ class VipController extends Controller {
       // 处理数据时使用
       // filter['phone'] = query.phone
     }
+    let sorter = null
     if (query.name) {
       filter['name'] = new RegExp(ctx.helper.escapeStringRegExp(query.name), 'i');
     }
+    if(query.sorter) {
+      sorter = JSON.parse(query.sorter)
+    }
     const limit = parseInt(query.pageSize || 10);
     const offset = (parseInt(query.current || 1) - 1) * limit;
-    this.ctx.body = await this.ctx.service.vip.list(filter, limit, offset);
+    this.ctx.body = await this.ctx.service.vip.list(filter, limit, offset, sorter);
   }
   async bugRecordlist() {
     const ctx = this.ctx;
@@ -71,7 +75,6 @@ class VipController extends Controller {
     ctx.body = await ctx.service.vip.update(id, ctx.request.body);
   }
   async uploadFile() {
-    console.log('in')
     const ctx = this.ctx;
     ctx.body = await ctx.service.vip.uploadFile(ctx.request.files[0]);
   }
@@ -96,7 +99,6 @@ class VipController extends Controller {
       }
     }
     const list = await ctx.model.Vip.find(filter).lean().exec()
-    console.log(list.length, 100)
     let arr = list.filter(item => {
       return item.total - item.usedTotal != item.restTotal
     })
@@ -114,7 +116,6 @@ class VipController extends Controller {
       }
     }
     const list = await ctx.model.Vip.find(filter).lean().exec()
-    console.log(list.length, 100)
     let arr = list.filter(item => {
       return item.total - item.usedTotal != item.restTotal
     })
@@ -122,7 +123,6 @@ class VipController extends Controller {
       const Vip = await ctx.model.Vip.findOne({
         id: arr[i].id
       }).exec()
-      console.log(Vip, 1222)
       Vip.usedTotal = Vip.total - Vip.restTotal
       await Vip.save()
     }

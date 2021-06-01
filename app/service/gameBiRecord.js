@@ -7,7 +7,9 @@ class GameBiRecordService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     const [list, total] = await Promise.all([
-      ctx.model.GameBiRecord.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
+      ctx.model.GameBiRecord.find({
+        ...filter
+      }).sort({createTime: -1}).skip(offset).limit(limit)
         .lean()
         .exec(),
       ctx.model.GameBiRecord.countDocuments(filter)

@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const dayjs = require('dayjs')
 
 class GameBiRecordController extends Controller {
   async list() {
@@ -18,6 +19,12 @@ class GameBiRecordController extends Controller {
     }
     if (query.name) {
       filter['name'] = new RegExp(ctx.helper.escapeStringRegExp(query.name), 'i');
+    }
+    if(query.createTime) {
+      filter['createTime'] = {
+        $gte: query.createTime,
+        $lt: dayjs(query.createTime).add(1, 'day').format('YYYY-MM-DD')
+      }
     }
     const limit = parseInt(query.pageSize || 10);
     const offset = (parseInt(query.current || 1) - 1) * limit;
