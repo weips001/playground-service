@@ -23,10 +23,9 @@ class StatisticsService extends Service {
       }
     }])
     return {
-      data,
-      total,
+      restTotal: data[0].count,
+      total: total[0].count,
       success: true,
-      msg: '删除成功',
       code: 0,
     };
   }
@@ -57,8 +56,8 @@ class StatisticsService extends Service {
       }
     ]).exec()
     return {
-      vipTodayNum,
-      gameBiTodayNum,
+      vipTodayNum:vipTodayNum[0].count,
+      gameBiTodayNum: gameBiTodayNum[0].count,
       success: true,
     };
   }
@@ -89,8 +88,8 @@ class StatisticsService extends Service {
       }
     ]).exec()
     return {
-      vipTodayMoney,
-      gimeBiTodayMoney,
+      vipTodayMoney: vipTodayMoney[0].count,
+      gimeBiTodayMoney: gimeBiTodayMoney[0].count,
       success: true,
     };
   }
