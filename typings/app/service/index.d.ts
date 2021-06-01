@@ -13,6 +13,7 @@ import ExportInit = require('../../../app/service/init');
 import ExportRole = require('../../../app/service/role');
 import ExportSchool = require('../../../app/service/school');
 import ExportShoppingRecord = require('../../../app/service/shoppingRecord');
+import ExportStatistics = require('../../../app/service/statistics');
 import ExportStudent = require('../../../app/service/student');
 import ExportUser = require('../../../app/service/user');
 import ExportVip = require('../../../app/service/vip');
@@ -26,6 +27,7 @@ declare module 'egg' {
     role: AutoInstanceType<typeof ExportRole>;
     school: AutoInstanceType<typeof ExportSchool>;
     shoppingRecord: AutoInstanceType<typeof ExportShoppingRecord>;
+    statistics: AutoInstanceType<typeof ExportStatistics>;
     student: AutoInstanceType<typeof ExportStudent>;
     user: AutoInstanceType<typeof ExportUser>;
     vip: AutoInstanceType<typeof ExportVip>;
