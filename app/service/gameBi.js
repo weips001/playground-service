@@ -40,8 +40,12 @@ class gameBiService extends Service {
       restTotal: data.total,
       money: data.money,
       overdate: data.overdate,
-      remark: data.remark
+      remark: data.remark,
+      createTime: new Date()
     });
+    if(data.createTime) {
+      gameBiModel.createTime = data.createTime
+    }
     await gameBiModel.save();
     return {
       success: true,
@@ -104,7 +108,8 @@ class gameBiService extends Service {
         name: gameBiModel.name,
         phone: gameBiModel.phone,
         gameBiNum: data.deleteNum,
-        consumeTime: data.consumeTime
+        consumeTime: new Date(),
+        createTime: new Date()
       })
     }
     gameBiModel.updateTime = new Date();

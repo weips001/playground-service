@@ -18,7 +18,7 @@ class ClearData extends Subscription {
   }
 
   async subscribe() {
-    console.log(234)
+    console.log('启动了')
     
   }
 }

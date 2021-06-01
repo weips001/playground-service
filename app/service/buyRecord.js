@@ -7,7 +7,7 @@ class BuyRecordService extends Service {
   async list(filter, limit = 10, offset = 0) {
     const ctx = this.ctx;
     const [list, total] = await Promise.all([
-      ctx.model.BuyRecord.find(filter).skip(offset).limit(limit)
+      ctx.model.BuyRecord.find(filter).sorter({createTime: -1}).skip(offset).limit(limit)
         .lean()
         .exec(),
       ctx.model.BuyRecord.countDocuments(filter)

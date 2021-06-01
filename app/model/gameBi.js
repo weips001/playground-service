@@ -18,8 +18,7 @@ module.exports = app => {
       default: new Date()
     },
     updateTime: {
-      type: Date,
-      default: new Date()
+      type: Date
     },
   });
   return mongoose.model('GameBi', GameBiSchema);

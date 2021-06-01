@@ -10,12 +10,10 @@ module.exports = app => {
     phone: String,  // 手机号
     gameBiNum: Number,
     consumeTime: {
-      type: Date,
-      default: new Date()
+      type: Date
     },
     createTime: {
-      type: Date,
-      default: new Date()
+      type: Date
     }
   });
   return mongoose.model('GameBiRecord', GameBiRecordSchema);

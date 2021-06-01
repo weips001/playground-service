@@ -23,4 +23,5 @@ module.exports = app => {
   require('./student')(app)
   require('./gameBi')(app)
   require('./vip')(app)
+  require('./statistics')(app)
 };

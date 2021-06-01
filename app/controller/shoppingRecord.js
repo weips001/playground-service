@@ -28,7 +28,6 @@ class ShoppingRecordController extends Controller {
     ctx.body = await ctx.service.shoppingRecord.add(ctx.request.body);
   }
   async uploadFile() {
-    console.log('in')
     const ctx = this.ctx;
     ctx.body = await ctx.service.shoppingRecord.uploadFile(ctx.request.files[0]);
   }

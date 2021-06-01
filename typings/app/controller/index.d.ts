@@ -10,6 +10,7 @@ import ExportLogin = require('../../../app/controller/login');
 import ExportRole = require('../../../app/controller/role');
 import ExportSchool = require('../../../app/controller/school');
 import ExportShoppingRecord = require('../../../app/controller/shoppingRecord');
+import ExportStatistics = require('../../../app/controller/statistics');
 import ExportStudent = require('../../../app/controller/student');
 import ExportUser = require('../../../app/controller/user');
 import ExportVip = require('../../../app/controller/vip');
@@ -24,6 +25,7 @@ declare module 'egg' {
     role: ExportRole;
     school: ExportSchool;
     shoppingRecord: ExportShoppingRecord;
+    statistics: ExportStatistics;
     student: ExportStudent;
     user: ExportUser;
     vip: ExportVip;
