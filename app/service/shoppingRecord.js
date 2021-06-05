@@ -24,6 +24,7 @@ class ShoppingRecordService extends Service {
     const ctx = this.ctx;
     const app = this.app;
     const { cardId, name, phone, cardType, shoppingNum,consumeTime } = data
+    console.log(data, 277777)
     const ShoppingRecord = ctx.model.ShoppingRecord({
       id: ctx.helper.generateId(),
       cardId,
@@ -31,7 +32,8 @@ class ShoppingRecordService extends Service {
       name,
       phone,
       shoppingNum,
-      consumeTime
+      consumeTime,
+      createTime: consumeTime
     });
     await ShoppingRecord.save();
     return {

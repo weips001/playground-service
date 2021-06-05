@@ -15,6 +15,17 @@ class StatisticsController extends Controller {
     const ctx = this.ctx;
     this.ctx.body = await this.ctx.service.statistics.getTodayNum();
   }
+  async getMonthMoney() {
+    const ctx = this.ctx;
+    const query = ctx.query;
+    const filter = {
+      month: query.month
+    }
+    if(query.num) {
+      filter['num'] = Number(query.num)
+    }
+    this.ctx.body = await this.ctx.service.statistics.getMonthMoney(filter);
+  }
 }
 
 module.exports = StatisticsController;

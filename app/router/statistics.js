@@ -8,4 +8,5 @@ module.exports = app => {
   router.get('/api/getNotNum', controller.statistics.getNotNum);
   router.get('/api/getTodayMoney', controller.statistics.getTodayMoney);
   router.get('/api/getTodayNum', controller.statistics.getTodayNum);
+  router.get('/api/getMonthMoney', controller.statistics.getMonthMoney)
 };
