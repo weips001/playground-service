@@ -22,9 +22,15 @@ class StatisticsService extends Service {
         }
       }
     }])
+    let arr = data.filter(item=>{
+      return item._id === '0'
+    })
+    let arr1 = total.filter(item=>{
+      return item._id === '0'
+    })
     return {
-      restTotal: data[0].count,
-      total: total[0].count,
+      restTotal: arr[0].count,
+      total: arr1[0].count,
       success: true,
       code: 0,
     };
@@ -55,9 +61,17 @@ class StatisticsService extends Service {
         }
       }
     ]).exec()
+    let num1 = 0
+    let num2 = 0
+    if(vipTodayNum.length > 0) {
+      num1 = vipTodayNum[0].count
+    }
+    if(gameBiTodayNum.length > 0) {
+      num2 = gameBiTodayNum[0].count
+    }
     return {
-      vipTodayNum:vipTodayNum[0].count,
-      gameBiTodayNum: gameBiTodayNum[0].count,
+      vipTodayNum: num1,
+      gameBiTodayNum: num2,
       success: true,
     };
   }
@@ -87,9 +101,17 @@ class StatisticsService extends Service {
         }
       }
     ]).exec()
+    let num1 = 0
+    let num2 = 0
+    if(vipTodayMoney.length > 0) {
+      num1 = vipTodayMoney[0].count
+    }
+    if(gimeBiTodayMoney.length > 0) {
+      num2 = gimeBiTodayMoney[0].count
+    }
     return {
-      vipTodayMoney: vipTodayMoney[0].count,
-      gimeBiTodayMoney: gimeBiTodayMoney[0].count,
+      vipTodayMoney: num1,
+      gimeBiTodayMoney: num2,
       success: true,
     };
   }
