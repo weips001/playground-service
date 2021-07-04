@@ -22,19 +22,26 @@ class StatisticsService extends Service {
         }
       }
     }])
+    let arr = data.filter(item=>{
+      return item._id === '0'
+    })
+    let arr1 = total.filter(item=>{
+      return item._id === '0'
+    })
     return {
-      restTotal: data[0].count,
-      total: total[0].count,
+      restTotal: arr[0].count,
+      total: arr1[0].count,
       success: true,
       code: 0,
     };
   }
   async getTodayNum() {
     const ctx = this.ctx;
-    const today = new Date(new Date().setHours(0, 0, 0, 0))
-    const tomorrow = new Date(new Date().setHours(0, 0, 0, 0) + 24 * 60 * 60 * 1000 - 1)
+    const today = new Date(dayjs().hour(0).minute(0).second(0).millisecond(0).valueOf())
+    const tomorrow = new Date(dayjs().hour(0).minute(0).second(0).millisecond(0).add(1, 'day').valueOf())
+    console.log(today, tomorrow, 42)
     const vipTodayNum = await ctx.model.ShoppingRecord.aggregate([
-      { $match : { createTime : {$gte:today, $lte:tomorrow} }},
+      { $match : { consumeTime : {$gte:today, $lte:tomorrow} }},
       {
         $group: {
           _id: '',
@@ -55,9 +62,17 @@ class StatisticsService extends Service {
         }
       }
     ]).exec()
+    let num1 = 0
+    let num2 = 0
+    if(vipTodayNum.length > 0) {
+      num1 = vipTodayNum[0].count
+    }
+    if(gameBiTodayNum.length > 0) {
+      num2 = gameBiTodayNum[0].count
+    }
     return {
-      vipTodayNum:vipTodayNum[0].count,
-      gameBiTodayNum: gameBiTodayNum[0].count,
+      vipTodayNum: num1,
+      gameBiTodayNum: num2,
       success: true,
     };
   }
@@ -87,9 +102,64 @@ class StatisticsService extends Service {
         }
       }
     ]).exec()
+    let num1 = 0
+    let num2 = 0
+    if(vipTodayMoney.length > 0) {
+      num1 = vipTodayMoney[0].count
+    }
+    if(gimeBiTodayMoney.length > 0) {
+      num2 = gimeBiTodayMoney[0].count
+    }
     return {
-      vipTodayMoney: vipTodayMoney[0].count,
-      gimeBiTodayMoney: gimeBiTodayMoney[0].count,
+      vipTodayMoney: num1,
+      gimeBiTodayMoney: num2,
+      success: true,
+    };
+  }
+  async getMonthMoney(filter) {
+    const ctx = this.ctx;
+    let arr = []
+    let vipMonthMoneyList = []
+    let vipMonthNumList = []
+    let a = filter.num?Number(filter.num): 6
+    for(let i=0; i< a; i++) {
+      let month = new Date(dayjs().day(2).hour(0).minute(0).second(0).millisecond(0).subtract(i, 'month').format())
+      let lastMonth = new Date(dayjs().day(2).hour(0).minute(0).second(0).millisecond(0).subtract(i-1, 'month').format())
+      arr.unshift([month, lastMonth])
+    }
+    for(let i = 0; i<arr.length;i++) {
+      let vipTodayMoney = await ctx.model.ShoppingRecord.aggregate([
+        { $match : { consumeTime : {$gte:arr[i][0], $lte:arr[i][1]} }},
+        {
+          $group: {
+            _id: null,
+            count: {
+              $sum: '$shoppingNum'
+            }
+          }
+        }
+      ]).exec()
+      if(vipTodayMoney.length > 0) {
+        vipMonthMoneyList.push(vipTodayMoney[0].count)
+      }
+      let vipTodayNum = await ctx.model.Vip.aggregate([
+        { $match : { createTime : {$gte:arr[i][0], $lte:arr[i][1]} }},
+        {
+          $group: {
+            _id: null,
+            count: {
+              $sum: '$money'
+            }
+          }
+        }
+      ]).exec()
+      if(vipTodayNum.length > 0) {
+        vipMonthNumList.push(vipTodayNum[0].count)
+      }
+    }
+    return {
+      vipMonthMoneyList,
+      vipMonthNumList,
       success: true,
     };
   }
