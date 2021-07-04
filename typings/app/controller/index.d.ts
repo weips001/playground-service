@@ -7,6 +7,7 @@ import ExportGameBi = require('../../../app/controller/gameBi');
 import ExportGameBiRecord = require('../../../app/controller/gameBiRecord');
 import ExportInit = require('../../../app/controller/init');
 import ExportLogin = require('../../../app/controller/login');
+import ExportRecovery = require('../../../app/controller/recovery');
 import ExportRole = require('../../../app/controller/role');
 import ExportSchool = require('../../../app/controller/school');
 import ExportShoppingRecord = require('../../../app/controller/shoppingRecord');
@@ -22,6 +23,7 @@ declare module 'egg' {
     gameBiRecord: ExportGameBiRecord;
     init: ExportInit;
     login: ExportLogin;
+    recovery: ExportRecovery;
     role: ExportRole;
     school: ExportSchool;
     shoppingRecord: ExportShoppingRecord;

@@ -10,6 +10,7 @@ import ExportBuyRecord = require('../../../app/service/buyRecord');
 import ExportGameBi = require('../../../app/service/gameBi');
 import ExportGameBiRecord = require('../../../app/service/gameBiRecord');
 import ExportInit = require('../../../app/service/init');
+import ExportRecovery = require('../../../app/service/recovery');
 import ExportRole = require('../../../app/service/role');
 import ExportSchool = require('../../../app/service/school');
 import ExportShoppingRecord = require('../../../app/service/shoppingRecord');
@@ -24,6 +25,7 @@ declare module 'egg' {
     gameBi: AutoInstanceType<typeof ExportGameBi>;
     gameBiRecord: AutoInstanceType<typeof ExportGameBiRecord>;
     init: AutoInstanceType<typeof ExportInit>;
+    recovery: AutoInstanceType<typeof ExportRecovery>;
     role: AutoInstanceType<typeof ExportRole>;
     school: AutoInstanceType<typeof ExportSchool>;
     shoppingRecord: AutoInstanceType<typeof ExportShoppingRecord>;
