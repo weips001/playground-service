@@ -7,6 +7,18 @@ class RecoveryController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.recovery.add(ctx.request.body);
   }
+  async saveShoppingNum() {
+    const ctx = this.ctx;
+    ctx.body = await ctx.service.recovery.addShoppingNum(ctx.request.body);
+  }
+  async saveGameBi() {
+    const ctx = this.ctx;
+    ctx.body = await ctx.service.recovery.saveGameBi(ctx.request.body);
+  }
+  async saveGameBiRecord() {
+    const ctx = this.ctx;
+    ctx.body = await ctx.service.recovery.saveGameBiRecord(ctx.request.body);
+  }
 }
 
 module.exports = RecoveryController;

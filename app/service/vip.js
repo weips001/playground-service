@@ -12,14 +12,14 @@ class VipService extends Service {
         $ne: 0
       }
     }
-    let sorterNum = sorter && sorter.overdate === 'ascend'?1:-1
+    let sorterNum = sorter && sorter.overdate === 'ascend' ? 1 : -1
     const [list, total] = await Promise.all([
-      ctx.model.Vip.find(filter).sort({createTime: sorterNum}).skip(offset).limit(limit)
-      .lean()
-      .exec(),
+      ctx.model.Vip.find(filter).sort({ createTime: sorterNum }).skip(offset).limit(limit)
+        .lean()
+        .exec(),
       ctx.model.Vip.countDocuments(filter)
-      .lean()
-      .exec(),
+        .lean()
+        .exec(),
     ]);
     return {
       data: list,
@@ -33,12 +33,12 @@ class VipService extends Service {
       ...filter
     }
     const [list, total] = await Promise.all([
-      ctx.model.Vip.find(filter).sort({createTime: -1}).skip(offset).limit(limit)
-      .lean()
-      .exec(),
+      ctx.model.Vip.find(filter).sort({ createTime: -1 }).skip(offset).limit(limit)
+        .lean()
+        .exec(),
       ctx.model.Vip.countDocuments(filter)
-      .lean()
-      .exec(),
+        .lean()
+        .exec(),
     ]);
     return {
       data: list,
@@ -343,7 +343,7 @@ class VipService extends Service {
   }
   async getUserByPhone(phone) {
     const ctx = this.ctx
-    const user = await ctx.model.Vip.findOne({phone}).lean().exec();
+    const user = await ctx.model.Vip.findOne({ phone }).lean().exec();
     return {
       code: 0,
       data: user

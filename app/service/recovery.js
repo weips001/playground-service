@@ -8,10 +8,11 @@ class RecoveryService extends Service {
     const ctx = this.ctx;
     const vip = await ctx.model.Vip.findOne({
       id: data.id,
-      restTotal: data.restTotal,
-      createTime: data.createTime,
-      updateTime: data.updateTime
+      // restTotal: data.restTotal,
+      // createTime: data.createTime,
+      // updateTime: data.updateTime
     }).exec();
+
     if (!vip) {
       const {
         id,
@@ -50,77 +51,167 @@ class RecoveryService extends Service {
         usedTotal
       });
       await Vip.save();
+      console.log('新增成功', Vip.id)
       return {
         success: true,
         msg: '添加成功',
         code: 0
       };
-    } else {
+    }
+    const oldTime = new Date(vip.updateTime)
+    const newTime = new Date(data.updateTime)
+    if (oldTime < newTime) {
+      vip.updateTime = data.updateTime
+      vip.restTotal = data.restTotal
+      vip.usedTotal = data.usedTotal
+      vip.remark = data.usedTotal
+      await vip.save()
+      console.log('编辑成功', vip.id)
       return {
-        success: false,
-        msg: '已存在',
-        code: 1
-      };
-    }
-
-  }
-  async update(id, data = {}) {
-    const ctx = this.ctx;
-    const Vip = await ctx.model.Vip.findOne({
-      id
-    }).exec();
-    if (!Vip) {
-      return {
-        code: 1,
-        msg: 'Vip不存在',
-      };
-    }
-    if (typeof data.name !== 'undefined') {
-      Vip.name = data.name;
-    }
-    if (typeof data.sex !== 'undefined') {
-      Vip.sex = data.sex;
-    }
-    if (typeof data.remark !== 'undefined') {
-      Vip.remark = data.remark;
-    }
-    if (typeof data.phone !== 'undefined') {
-      Vip.phone = data.phone;
-    }
-    if (typeof data.deleteNum !== 'undefined') {
-      let num = Number(Vip.restTotal) - Number(data.deleteNum);
-      if (num < 0 && !Vip.isYearCard) {
-        return {
-          success: false,
-          msg: '次数已不够用了，请充值',
-          code: 1
-        }
+        success: true,
+        msg: '编辑成功',
+        code: 2
       }
-      Vip.restTotal = Number(Vip.restTotal) - Number(data.deleteNum);
-      Vip.usedTotal = Number(Vip.usedTotal) + Number(data.deleteNum);
-      if (Vip.isYearCard) {
-        Vip.restTotal = -1
-      }
-      // 添加一跳扣次记录
-      await this.ctx.service.shoppingRecord.add({
-        id: ctx.helper.generateId(),
-        cardId: Vip.cardId,
-        name: Vip.name,
-        phone: Vip.phone,
-        cardType: Vip.cardType,
-        consumeTime: data.createTime,
-        shoppingNum: data.deleteNum
-      })
     }
-    Vip.updateTime = new Date();
-    await Vip.save();
-    // if(Vip.restTotal === 0) {
-    //   await Vip.remove();
-    // }
     return {
-      success: true,
-      msg: '修改成功',
-      code: 0
+      success: false,
+      msg: '已存在',
+      code: 1
+    };
+  }
+
+  async addShoppingNum(data) {
+    const ctx = this.ctx;
+    const app = this.app;
+    const { id, cardId, name, phone, cardType, shoppingNum, consumeTime, createTime } = data
+    const shoppingRecord = await ctx.model.ShoppingRecord.findOne({
+      id: data.id,
+    }).exec();
+    if (!shoppingRecord) {
+      const ShoppingRecord = ctx.model.ShoppingRecord({
+        id,
+        cardId,
+        cardType,
+        name,
+        phone,
+        shoppingNum,
+        consumeTime,
+        createTime
+      });
+      await ShoppingRecord.save();
+      console.log('新增成功', ShoppingRecord.id)
+      return {
+        success: true,
+        msg: '添加成功',
+        code: 0
+      };
+    }
+    const oldTime = new Date(shoppingRecord.consumeTime)
+    const newTime = new Date(data.consumeTime)
+    if (oldTime < newTime) {
+      shoppingRecord.consumeTime = data.consumeTime
+      shoppingRecord.shoppingNum = data.shoppingNum
+      await shoppingRecord.save()
+      console.log('编辑成功', shoppingRecord.id)
+      return {
+        success: true,
+        msg: '编辑成功',
+        code: 2
+      }
+    }
+    return {
+      success: false,
+      msg: '已存在',
+      code: 1
+    };
+  }
+
+  async saveGameBi(data) {
+    const ctx = this.ctx;
+    const gameBi = await ctx.model.GameBi.findOne({
+      id: data.id,
+    }).exec();
+    if (!gameBi) {
+      const gameBiModel = ctx.model.GameBi({
+        id: data.id,
+        name: data.name,
+        phone: data.phone,
+        total: data.total,
+        restTotal: data.total,
+        money: data.money,
+        overdate: data.overdate,
+        remark: data.remark,
+        createTime: data.createTime,
+        updateTime: data.updateTime
+      });
+      await gameBiModel.save();
+      return {
+        success: true,
+        msg: '添加成功',
+        code: 0
+      };
+    }
+    const oldTime = new Date(gameBi.updateTime)
+    const newTime = new Date(data.updateTime)
+    if (oldTime < newTime) {
+      gameBi.updateTime = data.updateTime
+      gameBi.restTotal = data.restTotal
+      gameBi.remark = data.remark
+      await gameBi.save()
+      console.log('编辑成功', gameBi.id)
+      return {
+        success: true,
+        msg: '编辑成功',
+        code: 2
+      }
+    }
+    return {
+      success: false,
+      msg: '已存在',
+      code: 1
+    };
+  }
+
+  async saveGameBiRecord(data) {
+    const ctx = this.ctx;
+    const { id, name, phone, gameBiNum, consumeTime, createTime } = data
+    const gameBiRecord = await ctx.model.GameBiRecord.findOne({
+      id: data.id,
+    }).exec();
+    if (!gameBiRecord) {
+      const GameBiRecord = ctx.model.GameBiRecord({
+        id,
+        name,
+        phone,
+        gameBiNum,
+        consumeTime,
+        createTime
+      });
+      await GameBiRecord.save();
+      console.log('新增成功', data.id)
+      return {
+        success: true,
+        msg: '添加成功',
+        code: 0
+      };
+    }
+    const oldTime = new Date(gameBiRecord.consumeTime)
+    const newTime = new Date(data.consumeTime)
+    if (oldTime < newTime) {
+      gameBiRecord.consumeTime = data.consumeTime
+      gameBiRecord.gameBiNum = data.gameBiNum
+      await gameBiRecord.save()
+      console.log('编辑成功', gameBiRecord.id)
+      return {
+        success: true,
+        msg: '编辑成功',
+        code: 2
+      }
+    }
+    return {
+      success: false,
+      msg: '已存在',
+      code: 1
     };
   }
 }
