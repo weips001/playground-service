@@ -23,6 +23,12 @@ class RecoveryController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.recovery.updateVipByJson(ctx.request.body);
   }
+  async caculateBi() {
+    const ctx = this.ctx;
+    console.log(1111)
+    ctx.body = await ctx.service.recovery.caculateBi(ctx.request.body);
+  }
+
 }
 
 module.exports = RecoveryController;

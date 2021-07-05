@@ -7,4 +7,5 @@ module.exports = app => {
   router.post('/api/saveGameBi', controller.recovery.saveGameBi);
   router.post('/api/saveGameBiRecord', controller.recovery.saveGameBiRecord);
   router.get('/api/updateVipByJson', controller.recovery.updateVipByJson)
+  router.get('/api/caculateBi', controller.recovery.caculateBi)
 };

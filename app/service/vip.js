@@ -136,15 +136,15 @@ class VipService extends Service {
         Vip.restTotal = -1
       }
       // 添加一跳扣次记录
-      // await this.ctx.service.shoppingRecord.add({
-      //   id: ctx.helper.generateId(),
-      //   cardId: Vip.cardId,
-      //   name: Vip.name,
-      //   phone: Vip.phone,
-      //   cardType: Vip.cardType,
-      //   consumeTime: data.createTime,
-      //   shoppingNum: data.deleteNum
-      // })
+      await this.ctx.service.shoppingRecord.add({
+        id: ctx.helper.generateId(),
+        cardId: Vip.cardId,
+        name: Vip.name,
+        phone: Vip.phone,
+        cardType: Vip.cardType,
+        consumeTime: data.createTime,
+        shoppingNum: data.deleteNum
+      })
     }
     Vip.updateTime = new Date();
     await Vip.save();

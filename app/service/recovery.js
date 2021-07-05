@@ -221,30 +221,31 @@ class RecoveryService extends Service {
     let successNum = 0
     let rejectNum = 0
     let rejectArr = []
-    for(let i = 0; i< dataList.data.length; i++) {
-      const item  = dataList.data[i]
+    for (let i = 0; i < dataList.data.length; i++) {
+      const item = dataList.data[i]
       let Vip = await ctx.model.Vip.findOne({
         cardId: item.cardId
       })
-      let num = Number(Vip.restTotal) - Number(item.shoppingNum);
-      if (num < 0 && !Vip.isYearCard) {
-        rejectNum++
-        rejectArr.push(item.cardId)
-        console.log(i)
-        continue
-        // return {
-        //   success: false,
-        //   msg: '次数已不够用了，请充值',
-        //   code: 1
-        // }
-      }
-      Vip.restTotal = Number(Vip.restTotal) - Number(item.deleteNum);
-      Vip.usedTotal = Number(Vip.usedTotal) + Number(item.deleteNum);
       if (Vip.isYearCard) {
-        Vip.restTotal = -1
+        Vip.usedTotal++
+      } else {
+        let num = Number(Vip.restTotal) - Number(item.shoppingNum);
+        if (num < 0) {
+          rejectNum++
+          rejectArr.push(item.cardId)
+          console.log('错误索引', i)
+          // return {
+          //   success: false,
+          //   msg: '次数已不够用了，请充值',
+          //   code: 1
+          // }
+          // continue
+        }
+        Vip.restTotal = Number(Vip.restTotal) - Number(item.shoppingNum);
+        Vip.usedTotal = Number(Vip.usedTotal) + Number(item.shoppingNum);
       }
       Vip.updateTime = item.consumeTime;
-      // await Vip.save();
+      await Vip.save();
       successNum++
     }
     console.log(successNum, rejectNum, rejectArr)
@@ -252,5 +253,42 @@ class RecoveryService extends Service {
       successNum, rejectNum, rejectArr
     }
   }
+  async caculateBi() {
+    const ctx = this.ctx
+    const recordList = await ctx.model.GameBiRecord.find()
+    const numMap = {}
+    let sum = 0
+    for (let i = 0; i < recordList.length; i++) {
+      const item = recordList[i]
+      const { phone, gameBiNum } = item
+      if (numMap[phone]) {
+        numMap[phone] += gameBiNum
+      } else {
+        numMap[phone] = gameBiNum
+      }
+    }
+    for (let phone in numMap) {
+      const gamaBiList = await ctx.model.GameBi.find({ phone })
+      if (gamaBiList.length > 0) {
+        if (gamaBiList.length > 1) {
+          console.log('有多条数据', phone)
+        } else {
+          const gamabi = gamaBiList[0]
+          const { restTotal } = gamabi
+          if (numMap[phone] > restTotal) {
+            console.log('用超了', phone)
+          } else {
+            gamabi.restTotal = Number(gamabi.restTotal) - Number(numMap[phone])
+            await gamabi.save()
+            sum++
+          }
+        }
+      } else {
+        console.log('暂无数据', phone)
+      }
+    }
+    return sum
+  }
 }
-module.exports = RecoveryService;
+
+module.exports = RecoveryService
