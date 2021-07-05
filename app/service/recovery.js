@@ -3,6 +3,7 @@
 const Service = require('egg').Service;
 const xlsx = require('node-xlsx')
 const md5 = require('md5-node');
+const dataList = require('../../public/267.json')
 class RecoveryService extends Service {
   async add(data = {}) {
     const ctx = this.ctx;
@@ -213,6 +214,43 @@ class RecoveryService extends Service {
       msg: '已存在',
       code: 1
     };
+  }
+
+  async updateVipByJson() {
+    const ctx = this.ctx
+    let successNum = 0
+    let rejectNum = 0
+    let rejectArr = []
+    for(let i = 0; i< dataList.data.length; i++) {
+      const item  = dataList.data[i]
+      let Vip = await ctx.model.Vip.findOne({
+        cardId: item.cardId
+      })
+      let num = Number(Vip.restTotal) - Number(item.shoppingNum);
+      if (num < 0 && !Vip.isYearCard) {
+        rejectNum++
+        rejectArr.push(item.cardId)
+        console.log(i)
+        continue
+        // return {
+        //   success: false,
+        //   msg: '次数已不够用了，请充值',
+        //   code: 1
+        // }
+      }
+      Vip.restTotal = Number(Vip.restTotal) - Number(item.deleteNum);
+      Vip.usedTotal = Number(Vip.usedTotal) + Number(item.deleteNum);
+      if (Vip.isYearCard) {
+        Vip.restTotal = -1
+      }
+      Vip.updateTime = item.consumeTime;
+      // await Vip.save();
+      successNum++
+    }
+    console.log(successNum, rejectNum, rejectArr)
+    return {
+      successNum, rejectNum, rejectArr
+    }
   }
 }
 module.exports = RecoveryService;

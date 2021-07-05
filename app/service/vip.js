@@ -136,15 +136,15 @@ class VipService extends Service {
         Vip.restTotal = -1
       }
       // 添加一跳扣次记录
-      await this.ctx.service.shoppingRecord.add({
-        id: ctx.helper.generateId(),
-        cardId: Vip.cardId,
-        name: Vip.name,
-        phone: Vip.phone,
-        cardType: Vip.cardType,
-        consumeTime: data.createTime,
-        shoppingNum: data.deleteNum
-      })
+      // await this.ctx.service.shoppingRecord.add({
+      //   id: ctx.helper.generateId(),
+      //   cardId: Vip.cardId,
+      //   name: Vip.name,
+      //   phone: Vip.phone,
+      //   cardType: Vip.cardType,
+      //   consumeTime: data.createTime,
+      //   shoppingNum: data.deleteNum
+      // })
     }
     Vip.updateTime = new Date();
     await Vip.save();
@@ -156,6 +156,27 @@ class VipService extends Service {
       msg: '修改成功',
       code: 0
     };
+  }
+  async updateVipByJson(data) {
+    const ctx = this.ctx;
+    const Vip = await ctx.model.Vip.findOne({
+      cardId: data.cardId
+    })
+    let num = Number(Vip.restTotal) - Number(data.shoppingNum);
+    if (num < 0 && !Vip.isYearCard) {
+      return {
+        success: false,
+        msg: '次数已不够用了，请充值',
+        code: 1
+      }
+    }
+    Vip.restTotal = Number(Vip.restTotal) - Number(data.deleteNum);
+    Vip.usedTotal = Number(Vip.usedTotal) + Number(data.deleteNum);
+    if (Vip.isYearCard) {
+      Vip.restTotal = -1
+    }
+    Vip.updateTime = data.consumeTime;
+    await Vip.save();
   }
   async remove(id) {
     const ctx = this.ctx;

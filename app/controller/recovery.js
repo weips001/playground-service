@@ -19,6 +19,10 @@ class RecoveryController extends Controller {
     const ctx = this.ctx;
     ctx.body = await ctx.service.recovery.saveGameBiRecord(ctx.request.body);
   }
+  async updateVipByJson() {
+    const ctx = this.ctx;
+    ctx.body = await ctx.service.recovery.updateVipByJson(ctx.request.body);
+  }
 }
 
 module.exports = RecoveryController;
